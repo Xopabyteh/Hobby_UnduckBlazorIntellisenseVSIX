@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+﻿using Hobby_BlazorIntellisense;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -14,12 +15,20 @@ namespace BlazorIntellisense
     [Name("Class Name Completion Source")]
     internal class ClassNameCompletionSourceProvider : IAsyncCompletionSourceProvider
     {
-        private readonly Lazy<ClassNameCompletionSource> _source = new Lazy<ClassNameCompletionSource>(
-            valueFactory: () => new ClassNameCompletionSource(
-                    StylesheetFileProvider.Instance
-                )
-        );
+        public ClassNameCatalog ClassNameCatalog { get; private set; }
+        public ClassNameCompletionSource Source { get; private set; }
 
-        public IAsyncCompletionSource GetOrCreate(ITextView textView) => _source.Value;
+        public IAsyncCompletionSource GetOrCreate(ITextView textView)
+        {
+            if (Source != null)
+            {
+                return Source;
+            }
+
+            ClassNameCatalog = new ClassNameCatalog();
+            Source = new ClassNameCompletionSource(ClassNameCatalog);
+
+            return Source;
+        }
     }
 }

@@ -45,12 +45,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ClassNameCatalog.cs" />
     <Compile Include="ClassNameCompletionSource.cs" />
     <Compile Include="ClassNameCompletionSourceProvider.cs" />
     <Compile Include="CssCompletion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlazorIntellisensePackage.cs" />
-    <Compile Include="StylesheetFileProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
