@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Hobby_BlazorIntellisense.Commands;
+using Hobby_BlazorIntellisense.Domain;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -28,6 +30,8 @@ namespace BlazorIntellisense
     [Guid(BlazorIntellisensePackage.PackageGuidString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideLanguageService(typeof(ClassNameCompletionSource), "C#", 106)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(Hobby_BlazorIntellisense.ToolWindows.ManageCssCatalogToolWindow))]
     public sealed class BlazorIntellisensePackage : AsyncPackage
     {
          /// <summary>
@@ -49,6 +53,7 @@ namespace BlazorIntellisense
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await ManageCssCatalogToolWindowCommand.InitializeAsync(this);
         }
 
         #endregion

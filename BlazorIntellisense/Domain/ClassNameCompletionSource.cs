@@ -1,5 +1,4 @@
-﻿using Hobby_BlazorIntellisense;
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
@@ -8,7 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BlazorIntellisense
+namespace Hobby_BlazorIntellisense.Domain
 {
     internal class ClassNameCompletionSource : IAsyncCompletionSource
     {
@@ -40,21 +39,15 @@ namespace BlazorIntellisense
                 return Task.FromResult<object>(item.DisplayText);
             }
 
-            var header = new ClassifiedTextElement(
-                new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, "Selector: ", ClassifiedTextRunStyle.Bold),
-                new ClassifiedTextRun(PredefinedClassificationTypeNames.Identifier, cssCompletion.EntireSelector)
-            );
-
             // Format the CSS style text like code
             var styleText = new ClassifiedTextElement(
                 new ClassifiedTextRun(
                     PredefinedClassificationTypeNames.MarkupAttributeValue,
-                    cssCompletion.FullStyleText),
+                    cssCompletion.FullStyleText)
             );
 
             return Task.FromResult<object>(new ContainerElement(
-                ContainerElementStyle.Stacked,
-                header,
+                ContainerElementStyle.Wrapped,
                 styleText
             ));
         }
@@ -63,7 +56,7 @@ namespace BlazorIntellisense
         {
             // We don't trigger completion when user typed
             if (char.IsNumber(trigger.Character)         // a number
-                || (char.IsPunctuation(trigger.Character) && trigger.Character != '"') // punctuation (for some reason '"' counts as punctuation as well...)
+                || char.IsPunctuation(trigger.Character) && trigger.Character != '"' // punctuation (for some reason '"' counts as punctuation as well...)
                 || trigger.Character == '\n'             // new line
                 || trigger.Character == '='
                 || trigger.Reason == CompletionTriggerReason.Backspace

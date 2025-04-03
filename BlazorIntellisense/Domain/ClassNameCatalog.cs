@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Core.Imaging;
 using System.IO;
 
-namespace Hobby_BlazorIntellisense
+namespace Hobby_BlazorIntellisense.Domain
 {
     internal class ClassNameCatalog
     {
@@ -24,6 +24,7 @@ namespace Hobby_BlazorIntellisense
         public string[] GetFilePaths()
             => new string[]
             {
+                "C:\\VProjects\\HAVIT\\196.BTC\\Btc.Bootstrap\\dist\\css\\bootstrap.css"
             };
 
         public void BuildCompletionContextCache(IAsyncCompletionSource forCompletionSource)

@@ -1,11 +1,10 @@
-﻿using Hobby_BlazorIntellisense;
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace BlazorIntellisense
+namespace Hobby_BlazorIntellisense.Domain
 {
     [Export(typeof(IAsyncCompletionSourceProvider))]
     [ContentType("razor")]
