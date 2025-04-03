@@ -93,6 +93,9 @@
     <VSCTCompile Include="BlazorIntellisensePackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
+    <Content Include="Resources\DesignTimeImages\Add.png" />
+    <Content Include="Resources\DesignTimeImages\Refresh.png" />
+    <Content Include="Resources\DesignTimeImages\Remove.png" />
     <Content Include="Resources\ManageCssCatalogToolWindowCommand.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

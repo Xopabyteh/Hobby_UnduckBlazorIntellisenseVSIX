@@ -3,16 +3,72 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow">
-    <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="10" HorizontalAlignment="Center">ManageCssCatalogToolWindow</TextBlock>
-            <Button Content="Click me!" Click="button1_Click" Width="120" Height="80" Name="button1"/>
+             d:DesignHeight="400" d:DesignWidth="200"
+             Name="MyToolWindow"
+             HorizontalAlignment="Stretch">
+    <StackPanel Background="White">
+        <Label FontSize="14" FontWeight="Bold" Margin="0,0,0,8">.sln</Label>
+        <StackPanel HorizontalAlignment="Stretch" Margin="16,0,8,0">
+            <Grid Margin="0, 0, 0, 16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="4"  Margin="0,0,0,4" Padding="0">
+                    <Hyperlink>
+                        bootstrap.css
+                    </Hyperlink>
+                </TextBlock>
+                <TextBox Grid.Row="1"
+                            Grid.ColumnSpan="4"
+                            Text="./Mobile.Client/wwwroot/css/bootstrap/bootstrap.css"
+                            Margin="0,0,0,4"
+                            Padding="4"
+                            IsEnabled="True" TextWrapping="NoWrap" />
+                <Label Grid.Row="2" Grid.Column="0" FontSize="11" Padding="0">#.=870</Label>
+                <Button Grid.Row="2" 
+                        Grid.Column="2" 
+                        d:Content="{DynamicResource UiRemoveDT}" 
+                        Content="{DynamicResource UiRemove}" 
+                        Background="Transparent" 
+                        BorderThickness="0" Margin="0,0,4,0"/>
+                <Button Grid.Row="2" 
+                        Grid.Column="3" 
+                        d:Content="{DynamicResource UiRefreshDT}" 
+                        Content="{DynamicResource UiRefresh}" 
+                        Background="Transparent" 
+                        BorderThickness="0" />
+            </Grid>
+            <Button Grid.Row="2" 
+                        Grid.Column="3" 
+                        d:Content="{DynamicResource UiAddDT}" 
+                        Content="{DynamicResource UiAdd}" 
+                        Background="Transparent" 
+                        BorderThickness="0" />
         </StackPanel>
-    </Grid>
+    </StackPanel>
+    <UserControl.Resources>
+        <imaging:CrispImage x:Key="UiRemove" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Remove}" />
+        <Image              x:Key="UiRemoveDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Remove.png"/>
+
+        <imaging:CrispImage x:Key="UiRefresh" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Refresh}" />
+        <Image              x:Key="UiRefreshDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Refresh.png"/>
+
+        <imaging:CrispImage x:Key="UiAdd" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Add}" />
+        <Image              x:Key="UiAddDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Add.png"/>
+    </UserControl.Resources>
 </UserControl>
