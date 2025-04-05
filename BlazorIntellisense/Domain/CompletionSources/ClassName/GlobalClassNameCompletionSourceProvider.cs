@@ -13,13 +13,13 @@ namespace Hobby_BlazorIntellisense.Domain
     [ContentType("RazorCSharp")]
     [ContentType("LegacyRazorCSharp")]
     [Order(Before = "default")]
-    [Name("Class Name Completion Source")]
-    public class ClassNameCompletionSourceProvider : IAsyncCompletionSourceProvider
+    [Name(nameof(GlobalClassNameCompletionSourceProvider))]
+    public class GlobalClassNameCompletionSourceProvider : IAsyncCompletionSourceProvider
     {
         public static readonly ImageElement GlobalCompletionIcon = 
             new ImageElement(KnownMonikers.GlobalVariable.ToImageId(), "G");
 
-        public ClassNameCompletionSource Source { get; private set; }
+        public GlobalClassNameCompletionSource Source { get; private set; }
 
         public IAsyncCompletionSource GetOrCreate(ITextView textView)
         {
@@ -27,8 +27,8 @@ namespace Hobby_BlazorIntellisense.Domain
             {
                 return Source;
             }
-
-            Source = new ClassNameCompletionSource();
+            
+            Source = new GlobalClassNameCompletionSource();
 
             return Source;
         }

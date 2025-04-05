@@ -45,8 +45,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Domain\CompletionSources\ClassName\ClassNameCompletionSource.cs" />
-    <Compile Include="Domain\CompletionSources\ClassName\ClassNameCompletionSourceProvider.cs" />
+    <Compile Include="Domain\CompletionSources\ClassName\GlobalClassNameCompletionSource.cs" />
+    <Compile Include="Domain\CompletionSources\ClassName\GlobalClassNameCompletionSourceProvider.cs" />
     <Compile Include="Domain\CssClassCompletion.cs" />
     <Compile Include="Domain\SolutionCompletionSettings.cs" />
     <Compile Include="Domain\StylesheetCompletions.cs" />

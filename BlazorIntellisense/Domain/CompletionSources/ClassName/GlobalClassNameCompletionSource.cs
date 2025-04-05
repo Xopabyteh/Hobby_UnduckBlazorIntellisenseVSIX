@@ -1,0 +1,128 @@
+﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
+using Microsoft.VisualStudio.Language.StandardClassification;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Adornments;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Hobby_BlazorIntellisense.Domain
+{
+    /// <summary>
+    /// Provides global solution scoped intellisense for class names
+    /// </summary>
+    public class GlobalClassNameCompletionSource : IAsyncCompletionSource
+    {
+        private CompletionContext _cachedCompletionContext;
+
+        public GlobalClassNameCompletionSource()
+        {
+            SolutionCssCatalogService.Instance.OnSolutionGlobalCompletionsChangedEvent += BuildCompletionCache;
+            BuildCompletionCache();
+        }
+
+        private void BuildCompletionCache()
+        {
+            var globalCompletions = SolutionCssCatalogService.Instance.SolutionGlobalCompletions;
+            _cachedCompletionContext = new CompletionContext(
+                globalCompletions.Classes.Select(c => new CompletionItem(
+                    c.ClassName,
+                    this,
+                    GlobalClassNameCompletionSourceProvider.GlobalCompletionIcon
+                )).ToImmutableArray()
+            );
+        }
+        public Task<CompletionContext> GetCompletionContextAsync(
+            IAsyncCompletionSession session,
+            CompletionTrigger trigger, 
+            SnapshotPoint triggerLocation,
+            SnapshotSpan applicableToSpan,
+            CancellationToken token)
+        {
+            return Task.FromResult(_cachedCompletionContext);
+        }
+
+        public Task<object> GetDescriptionAsync(IAsyncCompletionSession session, CompletionItem item, CancellationToken token)
+        {
+            // DisplayText = ClassName
+            var contains = SolutionCssCatalogService.Instance.SolutionGlobalCompletions.ClassNameToCompletion.TryGetValue(item.DisplayText, out var completion);
+            if(!contains)
+            {
+                return Task.FromResult<object>(null);
+            }
+
+            return Task.FromResult<object>(new ContainerElement(ContainerElementStyle.Wrapped, new[]
+            {
+                new ClassifiedTextElement(new[]
+                {
+                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Identifier, completion.ClassName),
+                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, completion.FullStyleText)
+                })
+            }));
+        }
+
+        public CompletionStartData InitializeCompletion(CompletionTrigger trigger, SnapshotPoint triggerLocation, CancellationToken token)
+        {
+            // We don't trigger completion when user typed
+            if (char.IsNumber(trigger.Character)         // a number
+                || (char.IsPunctuation(trigger.Character) && trigger.Character != '"') // punctuation (for some reason '"' counts as punctuation as well...)
+                || trigger.Character == '\n'             // new line
+                || trigger.Character == '='
+                || trigger.Reason == CompletionTriggerReason.Backspace
+                || trigger.Reason == CompletionTriggerReason.Deletion)
+            {
+                return CompletionStartData.DoesNotParticipateInCompletion;
+            }
+
+            // Check if we are in the class= context
+            var lineStart = triggerLocation.GetContainingLine().Start;
+            var spanBeforeCaret = new SnapshotSpan(lineStart, triggerLocation);
+            var textBeforeCaret = triggerLocation.Snapshot.GetText(spanBeforeCaret);
+
+            if (textBeforeCaret.IndexOf("class=\"", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                return CompletionStartData.DoesNotParticipateInCompletion;
+            }
+
+            // -> In the class= context
+            var tokenSpan = FindClassSelectorSpan(triggerLocation);
+            return new CompletionStartData(CompletionParticipation.ProvidesItems, tokenSpan);
+        }
+
+        
+        private static SnapshotSpan FindClassSelectorSpan(SnapshotPoint triggerLocation)
+        {
+            var snapshot = triggerLocation.Snapshot;
+            int position = triggerLocation.Position;
+
+            if (snapshot.Length == 0 || position < 0 || position > snapshot.Length)
+                return new SnapshotSpan(triggerLocation, 0);
+
+            bool IsWordChar(char c) => !char.IsWhiteSpace(c) && c != '"';
+
+            int start = position;
+            while (start > 0 && IsWordChar(snapshot[start - 1]))
+            {
+                start--;
+            }
+
+            int end = position;
+            while (end < snapshot.Length && IsWordChar(snapshot[end]))
+            {
+                end++;
+            }
+
+            if (start == end)
+            {
+                // No word found, return empty span that will grow as user types
+                return new SnapshotSpan(triggerLocation, 0);
+            }
+
+            return new SnapshotSpan(snapshot, start, end - start);
+        }
+
+    }
+}

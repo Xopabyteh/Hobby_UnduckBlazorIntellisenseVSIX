@@ -17,7 +17,8 @@ namespace Hobby_BlazorIntellisense.Domain
         /// <summary>
         /// Completions that are to be used in the entire solution.
         /// </summary>
-        public StylesheetCompletions SolutionGlobalCompletions { get; private set; } = new StylesheetCompletions();
+        public StylesheetCompletions SolutionGlobalCompletions { get; private set; }
+        public event Action OnSolutionGlobalCompletionsChangedEvent;
 
         /// <summary>
         /// Key: file path of the stylesheet, Value: CssClassCompletion
@@ -36,11 +37,8 @@ namespace Hobby_BlazorIntellisense.Domain
 
         public void BuildSolutionGlobalCache(string[] stylesheetPaths)
         {
-            // This will happen only once and doesn't necessarily need to be that fast.
+            // This will happen very seldom and doesn't necessarily need to be that fast.
 
-            // Prepare
-            SolutionGlobalCompletions = new StylesheetCompletions();
-            
             // Parse
             List<CssClassCompletion> classes = new List<CssClassCompletion>(1000);
             foreach (var filePath in stylesheetPaths)
@@ -50,9 +48,13 @@ namespace Hobby_BlazorIntellisense.Domain
             }
 
             // Set
-            SolutionGlobalCompletions.Classes = classes.GroupBy(c => c.ClassName)
-                .Select(g => g.First())
-                .ToImmutableArray();
+            SolutionGlobalCompletions = new StylesheetCompletions(
+                classes: classes.GroupBy(c => c.ClassName)
+                                .Select(g => g.First())
+                                .ToImmutableArray()
+            );
+
+            OnSolutionGlobalCompletionsChangedEvent?.Invoke();
         }
 
         private (List<CssClassCompletion> classes, bool _) ParseStylesheetToCompletions(string filePath)

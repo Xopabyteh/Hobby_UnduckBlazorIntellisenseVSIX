@@ -29,7 +29,7 @@ namespace BlazorIntellisense
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(BlazorIntellisensePackage.PackageGuidString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideLanguageService(typeof(ClassNameCompletionSource), "C#", 106)]
+    [ProvideLanguageService(typeof(GlobalClassNameCompletionSource), "C#", 106)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(Hobby_BlazorIntellisense.ToolWindows.ManageCssCatalogToolWindow))]
     public sealed class BlazorIntellisensePackage : AsyncPackage
