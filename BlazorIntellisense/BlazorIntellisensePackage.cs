@@ -2,15 +2,14 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using Hobby_BlazorIntellisense.Commands;
-using Hobby_BlazorIntellisense.Domain;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using EnvDTE;
 using Microsoft.VisualStudio.Threading;
-using System.Linq;
 using EnvDTE80;
 using Hobby_BlazorIntellisense.Domain.Settings;
+using Hobby_BlazorIntellisense.Domain.CompletionSources.Global;
 namespace BlazorIntellisense
 {
     /// <summary>
@@ -55,18 +54,20 @@ namespace BlazorIntellisense
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
             await ManageCssCatalogToolWindowCommand.InitializeAsync(this);
-            
+            await Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
+            await Hobby_BlazorIntellisense.RebuildIsolatedCompletionsCacheCommand.InitializeAsync(this);
+
             // Subscribe to solution load event
             var dte = (DTE2)await GetServiceAsync(typeof(DTE));
             dte.Events.SolutionEvents.Opened += HandleSolutionOpened;
             dte.Events.SolutionEvents.AfterClosing += HandleSolutionClosed;
-            await Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
         }
 
         private void HandleSolutionClosed()
         {
-            throw new NotImplementedException();
+            // Todo: clear?
         }
 
         /// <summary>
@@ -87,7 +88,10 @@ namespace BlazorIntellisense
 
                 // Switch to any thread
                 await Task.CompletedTask.ConfigureAwait(false);
-                
+
+                // Todo: load isolated completions
+                // Todo: rebuild isolated completions on file save
+
                 // Load settings
                 var settingsService = SolutionCompletionSettingsService.Instance;
                 var settings = settingsService.EnsureLoadSettingsForSolution(slnFilePath);

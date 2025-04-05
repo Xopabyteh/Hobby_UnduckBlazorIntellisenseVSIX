@@ -1,16 +1,19 @@
 ﻿using ExCSS;
+using MoreLinq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Hobby_BlazorIntellisense.Domain
 {
     /// <summary>
     /// Control the catalog accoarding to the current solution.
     /// </summary>
-    public partial class SolutionCssCatalogService
+    public sealed class SolutionCssCatalogService
     {
         public static SolutionCssCatalogService Instance { get; private set; } = new SolutionCssCatalogService();
 
@@ -20,21 +23,22 @@ namespace Hobby_BlazorIntellisense.Domain
         public StylesheetCompletions SolutionGlobalCompletions { get; private set; }
         public event Action OnSolutionGlobalCompletionsChangedEvent;
 
-        ///// <summary>
-        ///// Key: file path of the stylesheet, Value: CssClassCompletion
-        ///// </summary>
-        //public Dictionary<string, StylesheetCompletions> RazorIsolationCompletions { get; private set; } = new Dictionary<string, StylesheetCompletions>(StringComparer.OrdinalIgnoreCase);
-        
+        /// <summary>
+        /// Key: file path of the stylesheet, Value: CssClassCompletion
+        /// </summary>
+        public ConcurrentDictionary<string, StylesheetCompletions> RazorIsolationCompletions { get; private set; } 
+            = new ConcurrentDictionary<string, StylesheetCompletions>(StringComparer.OrdinalIgnoreCase);
+
         private static readonly StylesheetParser s_parser = new StylesheetParser(
             tolerateInvalidSelectors: true,
             tolerateInvalidValues: true,
             preserveComments: true,
             preserveDuplicateProperties: false);
-        
-        public SolutionCssCatalogService()
-        {
-        }
 
+        /// <summary>
+        /// Builds (or rebuilds) the global cache of the solution.
+        /// </summary>
+        /// <param name="stylesheetPaths"></param>
         public void BuildSolutionGlobalCache(IEnumerable<string> stylesheetPaths)
         {
             // This will happen very seldom and doesn't necessarily need to be that fast.
@@ -49,14 +53,36 @@ namespace Hobby_BlazorIntellisense.Domain
 
             // Set
             SolutionGlobalCompletions = new StylesheetCompletions(
-                classes: classes.GroupBy(c => c.ClassName)
-                                .Select(g => g.First())
-                                .ToImmutableArray()
+                classes: classes
+                    .DistinctBy(c => c.ClassName, StringComparer.OrdinalIgnoreCase)
+                    .ToImmutableArray()
             );
 
             OnSolutionGlobalCompletionsChangedEvent?.Invoke();
         }
 
+        public void BuildIsolatedStylesheetsCaches(IEnumerable<string> isolatedStylesheetPaths)
+        {
+            Parallel.ForEach(isolatedStylesheetPaths, filePath =>
+            {
+                BuildIsolatedStylesheetCache(filePath);
+            });
+        }
+
+        public void BuildIsolatedStylesheetCache(string filePath)
+        {
+            // Parse
+            var completions = ParseStylesheetToCompletions(filePath);
+         
+            // Set
+            RazorIsolationCompletions[filePath] = new StylesheetCompletions(
+                classes: completions.classes
+                    .DistinctBy(c => c.ClassName, StringComparer.OrdinalIgnoreCase)
+                    .ToImmutableArray()
+            );
+        }
+
+        # region Stylesheet parsing
         private (List<CssClassCompletion> classes, bool _) ParseStylesheetToCompletions(string filePath)
         {
             var stylesheet = s_parser.Parse(File.ReadAllText(filePath));
@@ -73,6 +99,7 @@ namespace Hobby_BlazorIntellisense.Domain
                     EntireSelector = s.Text,
                     FullStyleText = styleRule.StylesheetText.Text,
                     StylesheetFilePath = filePath,
+                    StylesheetFileName = Path.GetFileName(filePath),
                     StylesheetPositionStart = styleRule.StylesheetText.Range.Start
                 });
 
@@ -82,6 +109,7 @@ namespace Hobby_BlazorIntellisense.Domain
             return (totalClassCompletions, false);
         }
 
+        // Todo: doesn't extract btn-link from ".top-row ::deep a:hover, .top-row ::deep .btn-link:hover" 👀
         /// <summary>
         /// Manages to get all selectors (like <see cref="ClassSelector"/>)
         /// from a style rule. The method handles scenarios where selectors are deeply nested,
@@ -136,5 +164,6 @@ namespace Hobby_BlazorIntellisense.Domain
             return listSelectors
                 .Concat(fromCompoundSelectors);
         }
+        # endregion
     }
 }

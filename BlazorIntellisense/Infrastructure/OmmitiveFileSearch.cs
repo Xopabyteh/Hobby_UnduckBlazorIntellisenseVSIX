@@ -12,8 +12,8 @@ namespace Hobby_BlazorIntellisense.Infrastructure
         public static IEnumerable<string> GetFilesExcludingDirs(
             string rootDirectory,
             string searchPattern,
-            string excludedExtension,
             string[] excludedDirs,
+            string excludedExtension = null,
             int currentDepth = 0)
         {
             if (currentDepth > k_MaxSearchDepth)
@@ -21,8 +21,10 @@ namespace Hobby_BlazorIntellisense.Infrastructure
                 yield break; // Prevent infinite recursion
             }
 
-            var filesInDirectory = Directory.EnumerateFiles(rootDirectory, searchPattern, SearchOption.TopDirectoryOnly)
-                .Where(file => !file.EndsWith(excludedExtension, StringComparison.OrdinalIgnoreCase));
+            var filesInDirectory = excludedExtension is null
+                ? Directory.EnumerateFiles(rootDirectory, searchPattern, SearchOption.TopDirectoryOnly)
+                : Directory.EnumerateFiles(rootDirectory, searchPattern, SearchOption.TopDirectoryOnly)
+                    .Where(file => !file.EndsWith(excludedExtension, StringComparison.OrdinalIgnoreCase));
             
             foreach (var file in filesInDirectory)
             {
@@ -36,7 +38,7 @@ namespace Hobby_BlazorIntellisense.Infrastructure
                     continue;
                 }
 
-                foreach (var file in GetFilesExcludingDirs(directory, searchPattern, excludedExtension, excludedDirs, currentDepth + 1))
+                foreach (var file in GetFilesExcludingDirs(directory, searchPattern, excludedDirs, excludedExtension, currentDepth + 1))
                 {
                     yield return file;
                 }

@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain
+namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Global
 {
     /// <summary>
     /// Provides global solution scoped intellisense for class names
@@ -56,22 +56,14 @@ namespace Hobby_BlazorIntellisense.Domain
                 return Task.FromResult<object>(null);
             }
 
-            return Task.FromResult<object>(new ContainerElement(ContainerElementStyle.Stacked, new[]
-            {
-                new ClassifiedTextElement(new[]
-                {
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, completion.ClassName),
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, ":\n\n"),
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, completion.FullStyleText)
-                })
-            }));
+            return SharedCompletionSourceLogic.GetDescriptionAsync(completion);
         }
 
         public CompletionStartData InitializeCompletion(CompletionTrigger trigger, SnapshotPoint triggerLocation, CancellationToken token)
         {
             // We don't trigger completion when user typed
             if (char.IsNumber(trigger.Character)         // a number
-                || (char.IsPunctuation(trigger.Character) && trigger.Character != '"') // punctuation (for some reason '"' counts as punctuation as well...)
+                || char.IsPunctuation(trigger.Character) && trigger.Character != '"' // punctuation (for some reason '"' counts as punctuation as well...)
                 || trigger.Character == '\n'             // new line
                 || trigger.Character == '='
                 || trigger.Reason == CompletionTriggerReason.Backspace
@@ -81,7 +73,7 @@ namespace Hobby_BlazorIntellisense.Domain
             }
 
             // Check if we are in the class= context
-            if(!TextNavigationHelpers.IsInsideHtmlAttribute(triggerLocation))
+            if(!TextNavigationHelpers.IsInsideHtmlAttribute(triggerLocation, attributeOpening: "class=\""))
             {
                 return CompletionStartData.DoesNotParticipateInCompletion;
             }

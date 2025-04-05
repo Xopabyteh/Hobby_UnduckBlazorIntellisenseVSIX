@@ -5,7 +5,12 @@ namespace Hobby_BlazorIntellisense.Infrastructure
 {
     public class TextNavigationHelpers
     {
-        public static bool IsInsideHtmlAttribute(SnapshotPoint triggerLocation, string attributeName="class=\"")
+        /// <summary>
+        /// Check if the trigger location is inside an attribute in an HTML element.
+        /// Note that the attribute name should also include the equal sign and the opening quote.
+        /// (e.g. "class=\"")
+        /// </summary>
+        public static bool IsInsideHtmlAttribute(SnapshotPoint triggerLocation, string attributeOpening="class=\"")
         {
             const int maxLinesToCheck = 5;
 
@@ -31,7 +36,7 @@ namespace Hobby_BlazorIntellisense.Infrastructure
                         lineText = lineText.Substring(0, Math.Min(relativeCaret, lineText.Length));
                     }
 
-                    int classIndex = lineText.LastIndexOf(attributeName, StringComparison.OrdinalIgnoreCase);
+                    int classIndex = lineText.LastIndexOf(attributeOpening, StringComparison.OrdinalIgnoreCase);
                     if (classIndex >= 0)
                     {
                         return true;

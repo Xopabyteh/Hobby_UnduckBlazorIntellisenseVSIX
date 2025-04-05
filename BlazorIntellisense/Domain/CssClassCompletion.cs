@@ -21,6 +21,7 @@ namespace Hobby_BlazorIntellisense.Domain
         public string FullStyleText { get; set; }
 
         public string StylesheetFilePath { get; set; }
+        public string StylesheetFileName { get; set; }
         public TextPosition StylesheetPositionStart { get; set; }
     }
 }

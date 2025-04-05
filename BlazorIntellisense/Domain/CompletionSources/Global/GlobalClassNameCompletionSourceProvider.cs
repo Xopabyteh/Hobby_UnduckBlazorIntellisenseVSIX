@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace Hobby_BlazorIntellisense.Domain
+namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Global
 {
     [Export(typeof(IAsyncCompletionSourceProvider))]
     [ContentType("razor")]

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.IO;
 using EnvDTE;
 using EnvDTE80;
 using Hobby_BlazorIntellisense.Domain;
-using Hobby_BlazorIntellisense.Domain.Settings;
 using Hobby_BlazorIntellisense.Infrastructure;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -18,12 +14,12 @@ namespace Hobby_BlazorIntellisense
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class RebuildGlobalCompletionsCacheCommand
+    internal sealed class RebuildIsolatedCompletionsCacheCommand
     {
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 0x0102;
+        public const int CommandId = 0x0103;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -41,7 +37,7 @@ namespace Hobby_BlazorIntellisense
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        private RebuildGlobalCompletionsCacheCommand(AsyncPackage package, OleMenuCommandService commandService)
+        private RebuildIsolatedCompletionsCacheCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -54,7 +50,7 @@ namespace Hobby_BlazorIntellisense
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static RebuildGlobalCompletionsCacheCommand Instance
+        public static RebuildIsolatedCompletionsCacheCommand Instance
         {
             get;
             private set;
@@ -77,12 +73,12 @@ namespace Hobby_BlazorIntellisense
         /// <param name="package">Owner package, not null.</param>
         public static async Task InitializeAsync(AsyncPackage package)
         {
-            // Switch to the main thread - the call to AddCommand in RebuildGlobalCompletionsCacheCommand's constructor requires
+            // Switch to the main thread - the call to AddCommand in RebuildIsolatedCompletionsCacheCommand's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-            Instance = new RebuildGlobalCompletionsCacheCommand(package, commandService);
+            Instance = new RebuildIsolatedCompletionsCacheCommand(package, commandService);
         }
 
         /// <summary>
@@ -104,39 +100,24 @@ namespace Hobby_BlazorIntellisense
                 var solution = dte.Solution;
                 var slnFilePath = solution.FullName;
 
-                // Load settings
-                var settingsService = SolutionCompletionSettingsService.Instance;
-                var settings = settingsService.EnsureLoadSettingsForSolution(slnFilePath);
+                var solutionDirectory = Path.GetDirectoryName(slnFilePath);
 
-                if(settings == null)
-                {
-                    return;
-                }
+                // Load all isolated stylesheets we can find in the solution
 
-                // -> Settings loaded
-                // Load global completions from:
-                //  1. Whitelisted global stylesheets
-                var stronglyDefinedGlobalStylesheets = settingsService.WhitelistGlobalStylesheetPaths;
-
-                //  2. Whitelisted global stylesheets directories (recursively)
                 var excludedDirs = new string[] { "bin", "obj" };
-                var foundStylesheets = settingsService.WhitelistGlobalStylesheetDirectoryPaths
-                    .SelectMany(dir => OmmitiveFileSearch.GetFilesExcludingDirs(
-                        dir,
-                        "*.css",
+                var foundStylesheets = OmmitiveFileSearch.GetFilesExcludingDirs(
+                        solutionDirectory,
+                        "*.razor.css",
                         excludedDirs: excludedDirs,
-                        excludedExtension: ".razor.css"
-                    ));
+                        excludedExtension: null
+                    );
 
 
-                vsStatusBar.SetText("Rebuilding global completions cache...");
+                vsStatusBar.SetText("Rebuilding .razor.css completions cache...");
 
-                SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
-                    stronglyDefinedGlobalStylesheets
-                        .Concat(foundStylesheets)
-                );
+                SolutionCssCatalogService.Instance.BuildIsolatedStylesheetsCaches(foundStylesheets);
 
-                vsStatusBar.SetText("Global completions cache rebuilt.");
+                vsStatusBar.SetText(".razor.css cache rebuilt.");
             });
         }
     }
