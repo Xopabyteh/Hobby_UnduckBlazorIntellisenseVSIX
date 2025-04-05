@@ -55,6 +55,7 @@
     <Compile Include="Domain\StylesheetType.cs" />
     <Compile Include="Infrastructure\OmmitiveFileSearch.cs" />
     <Compile Include="Infrastructure\PathExtensions.cs" />
+    <Compile Include="Infrastructure\TextNavigationHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlazorIntellisensePackage.cs" />
     <Compile Include="Commands\RebuildGlobalCompletionsCacheCommand.cs" />
