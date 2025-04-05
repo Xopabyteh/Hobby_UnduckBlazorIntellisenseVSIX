@@ -45,10 +45,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Domain\ClassNameCatalog.cs" />
-    <Compile Include="Domain\ClassNameCompletionSource.cs" />
-    <Compile Include="Domain\ClassNameCompletionSourceProvider.cs" />
-    <Compile Include="Domain\CssCompletion.cs" />
+    <Compile Include="Domain\CompletionSources\ClassName\ClassNameCompletionSource.cs" />
+    <Compile Include="Domain\CompletionSources\ClassName\ClassNameCompletionSourceProvider.cs" />
+    <Compile Include="Domain\CssClassCompletion.cs" />
+    <Compile Include="Domain\SolutionCompletionSettings.cs" />
+    <Compile Include="Domain\StylesheetCompletions.cs" />
+    <Compile Include="Domain\SolutionCssCatalogService.cs" />
+    <Compile Include="Domain\StylesheetType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlazorIntellisensePackage.cs" />
     <Compile Include="ToolWindows\Controls\StylesheetDefinition.xaml.cs">

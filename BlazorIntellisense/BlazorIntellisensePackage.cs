@@ -54,6 +54,13 @@ namespace BlazorIntellisense
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await ManageCssCatalogToolWindowCommand.InitializeAsync(this);
+
+             SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
+                new []
+                {
+                    "C:\\Users\\xopab\\Desktop\\global-styles.css"
+                }
+            );
         }
 
         #endregion

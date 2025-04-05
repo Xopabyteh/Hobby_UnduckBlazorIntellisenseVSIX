@@ -1,24 +1,18 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+﻿using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
-using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Hobby_BlazorIntellisense.Domain
 {
-    internal class ClassNameCompletionSource : IAsyncCompletionSource
+    public class ClassNameCompletionSource : IAsyncCompletionSource
     {
-        private readonly ClassNameCatalog _classNameCatalog;
-        public ClassNameCompletionSource(ClassNameCatalog classNameCatalog)
-        {
-            _classNameCatalog = classNameCatalog;
-        
-            _classNameCatalog.BuildCompletionContextCache(forCompletionSource: this);
-        }
-
         public async Task<CompletionContext> GetCompletionContextAsync(
             IAsyncCompletionSession session,
             CompletionTrigger trigger, 
@@ -26,30 +20,36 @@ namespace Hobby_BlazorIntellisense.Domain
             SnapshotSpan applicableToSpan,
             CancellationToken token)
         {
+            var globalCompletions = SolutionCssCatalogService.Instance.SolutionGlobalCompletions;
             return new CompletionContext(
-                _classNameCatalog.CachedGlobalCompletionItems
-            ); 
+                globalCompletions.Classes.Select(c => new CompletionItem(
+                    c.ClassName,
+                    this,
+                    ClassNameCompletionSourceProvider.GlobalCompletionIcon
+                )).ToImmutableArray()
+            );
         }
 
         public Task<object> GetDescriptionAsync(IAsyncCompletionSession session, CompletionItem item, CancellationToken token)
         {
-            var contains = _classNameCatalog.ClassNameToCssCompletion.TryGetValue(item.DisplayText, out var cssCompletion);
-            if (!contains)
-            {
-                return Task.FromResult<object>(item.DisplayText);
-            }
+            return Task.FromResult<object>(null);
+            //var contains = _classNameCatalog.ClassNameToCssCompletion.TryGetValue(item.DisplayText, out var cssCompletion);
+            //if (!contains)
+            //{
+            //    return Task.FromResult<object>(item.DisplayText);
+            //}
 
-            // Format the CSS style text like code
-            var styleText = new ClassifiedTextElement(
-                new ClassifiedTextRun(
-                    PredefinedClassificationTypeNames.MarkupAttributeValue,
-                    cssCompletion.FullStyleText)
-            );
+            //// Format the CSS style text like code
+            //var styleText = new ClassifiedTextElement(
+            //    new ClassifiedTextRun(
+            //        PredefinedClassificationTypeNames.MarkupAttributeValue,
+            //        cssCompletion.FullStyleText)
+            //);
 
-            return Task.FromResult<object>(new ContainerElement(
-                ContainerElementStyle.Wrapped,
-                styleText
-            ));
+            //return Task.FromResult<object>(new ContainerElement(
+            //    ContainerElementStyle.Wrapped,
+            //    styleText
+            //));
         }
 
         public CompletionStartData InitializeCompletion(CompletionTrigger trigger, SnapshotPoint triggerLocation, CancellationToken token)
@@ -76,11 +76,6 @@ namespace Hobby_BlazorIntellisense.Domain
             }
 
             // -> In the class= context
-            //var items = Regex.Split(textBeforeCaret, "class=\"", RegexOptions.IgnoreCase);
-            //if (items?.Length < 2)
-            //{
-            //    return CompletionStartData.DoesNotParticipateInCompletion;
-            //}
             
             // Without FindTokenSpanAtPosition, we cannot accurately determine the token span
             // Assuming simple handling or returning a broad span instead:

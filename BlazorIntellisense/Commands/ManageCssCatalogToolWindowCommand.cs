@@ -3,6 +3,8 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using EnvDTE;
+using EnvDTE80;
 using Hobby_BlazorIntellisense.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -75,7 +77,7 @@ namespace Hobby_BlazorIntellisense.Commands
             // Switch to the main thread - the call to AddCommand in ManageCssCatalogToolWindowCommand's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
-
+            
             OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Instance = new ManageCssCatalogToolWindowCommand(package, commandService);
         }
@@ -87,9 +89,10 @@ namespace Hobby_BlazorIntellisense.Commands
         /// <param name="e">The event args.</param>
         private void Execute(object sender, EventArgs e)
         {
-            package.JoinableTaskFactory.RunAsync(async delegate
+            _ = package.JoinableTaskFactory.RunAsync(async delegate
             {
                 ToolWindowPane window = await package.ShowToolWindowAsync(typeof(ManageCssCatalogToolWindow), 0, true, package.DisposalToken);
+                
                 if (null == window || null == window.Frame)
                 {
                     throw new NotSupportedException("Cannot create tool window");

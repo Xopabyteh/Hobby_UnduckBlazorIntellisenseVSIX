@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+﻿using Microsoft.VisualStudio.Core.Imaging;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
+using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
 
 namespace Hobby_BlazorIntellisense.Domain
@@ -12,9 +14,11 @@ namespace Hobby_BlazorIntellisense.Domain
     [ContentType("LegacyRazorCSharp")]
     [Order(Before = "default")]
     [Name("Class Name Completion Source")]
-    internal class ClassNameCompletionSourceProvider : IAsyncCompletionSourceProvider
+    public class ClassNameCompletionSourceProvider : IAsyncCompletionSourceProvider
     {
-        public ClassNameCatalog ClassNameCatalog { get; private set; }
+        public static readonly ImageElement GlobalCompletionIcon = 
+            new ImageElement(KnownMonikers.GlobalVariable.ToImageId(), "G");
+
         public ClassNameCompletionSource Source { get; private set; }
 
         public IAsyncCompletionSource GetOrCreate(ITextView textView)
@@ -24,8 +28,7 @@ namespace Hobby_BlazorIntellisense.Domain
                 return Source;
             }
 
-            ClassNameCatalog = new ClassNameCatalog();
-            Source = new ClassNameCompletionSource(ClassNameCatalog);
+            Source = new ClassNameCompletionSource();
 
             return Source;
         }
