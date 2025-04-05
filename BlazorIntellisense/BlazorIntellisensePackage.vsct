@@ -13,13 +13,13 @@
     </Groups>
       
     <Buttons>
-        <Button guid="guidBlazorIntellisensePackageCmdSet" id="ManageCssCatalogToolWindowCommandId" priority="0x0100" type="Button">
+        <!--<Button guid="guidBlazorIntellisensePackageCmdSet" id="ManageCssCatalogToolWindowCommandId" priority="0x0100" type="Button">
             <Parent guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup" />
             <Icon guid="guidImages" id="bmpPic1" />
             <Strings>
                 <ButtonText>Manage CSS Catalog</ButtonText>
             </Strings>
-        </Button>
+        </Button>-->
         <Button guid="guidBlazorIntellisensePackageCmdSet" id="cmdidRebuildGlobalCompletionsCacheCommand" priority="0x0100" type="Button">
             <Parent guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup" />
             <Icon guid="guidImagesExportedMonikers" id="globalVariable" />
