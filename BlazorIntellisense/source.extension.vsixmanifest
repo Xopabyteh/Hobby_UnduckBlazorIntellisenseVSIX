@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="Hobby_BlazorIntellisense.01028603-2010-4287-b365-512e1ec0ea9e" Version="1.0" Language="en-US" Publisher="xopabyteh1337" />
-        <DisplayName>Hobby_BlazorIntellisense</DisplayName>
+        <Identity Id="Hobby_BlazorIntellisense.01028603-2010-4287-b365-512e1ec0ea9e" Version="1.0" Language="en-US" Publisher="Xopabyteh" />
+        <DisplayName>Unduck blazor intellisense</DisplayName>
         <Description xml:space="preserve">This extension allows you to define certain global stylesheets (like Bootstrap),
 which are expected to be available in all Blazor components.
 
 This is useful when your stylesheets are in a different project than your components
 (which VS doesn't recognize)</Description>
+        <MoreInfo>https://github.com/Xopabyteh/Hobby_UnduckBlazorIntellisenseVSIX</MoreInfo>
         <Icon>Resources\ExtensionIcon.png</Icon>
         <PreviewImage>Resources\ExtensionIcon.png</PreviewImage>
         <Tags>css, intellisense, html, blazor, global, stylesheet, unduck</Tags>
+        <Preview>true</Preview>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
