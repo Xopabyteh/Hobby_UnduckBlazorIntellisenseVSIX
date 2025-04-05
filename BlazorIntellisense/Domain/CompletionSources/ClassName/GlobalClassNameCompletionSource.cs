@@ -55,11 +55,12 @@ namespace Hobby_BlazorIntellisense.Domain
                 return Task.FromResult<object>(null);
             }
 
-            return Task.FromResult<object>(new ContainerElement(ContainerElementStyle.Wrapped, new[]
+            return Task.FromResult<object>(new ContainerElement(ContainerElementStyle.Stacked, new[]
             {
                 new ClassifiedTextElement(new[]
                 {
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Identifier, completion.ClassName),
+                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, completion.ClassName),
+                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, "->\n"),
                     new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, completion.FullStyleText)
                 })
             }));
@@ -95,54 +96,82 @@ namespace Hobby_BlazorIntellisense.Domain
 
         private static bool IsInsideClassAttribute(SnapshotPoint triggerLocation)
         {
-            var snapshot = triggerLocation.Snapshot;
-            var caretLineNumber = triggerLocation.GetContainingLine().LineNumber;
-
             const int maxLinesToCheck = 5;
-            int linesChecked = 0;
-            int caretOffset = triggerLocation.Position;
 
-            while (caretLineNumber >= 0 && linesChecked < maxLinesToCheck)
+            return IsToRightOfClass() && IsToLeftOffQuotation();
+        
+            bool IsToRightOfClass()
             {
-                var line = snapshot.GetLineFromLineNumber(caretLineNumber);
-                string lineText = line.GetText();
+                var snapshot = triggerLocation.Snapshot;
+                var caretLineNumber = triggerLocation.GetContainingLine().LineNumber;
 
-                // Only look at the part of the text before the caret on the caret line
-                if (caretLineNumber == triggerLocation.GetContainingLine().LineNumber)
+                int linesChecked = 0;
+                int caretOffset = triggerLocation.Position;
+
+                while (caretLineNumber >= 0 && linesChecked < maxLinesToCheck)
                 {
-                    int relativeCaret = triggerLocation.Position - line.Start.Position;
-                    lineText = lineText.Substring(0, Math.Min(relativeCaret, lineText.Length));
-                }
+                    var line = snapshot.GetLineFromLineNumber(caretLineNumber);
+                    string lineText = line.GetText();
 
-                int classIndex = lineText.LastIndexOf("class=\"", StringComparison.OrdinalIgnoreCase);
-                if (classIndex >= 0)
-                {
-                    // Now check if the closing quote is present *after* the class=" match
-                    int quoteStart = classIndex + "class=\"".Length;
-                    int closingQuoteIndex = lineText.IndexOf('"', quoteStart);
-
-                    if (closingQuoteIndex == -1)
+                    // Only look at the part of the text before the caret on the caret line
+                    if (caretLineNumber == triggerLocation.GetContainingLine().LineNumber)
                     {
-                        // No closing quote, so caret must still be inside the attribute
-                        return true;
+                        int relativeCaret = triggerLocation.Position - line.Start.Position;
+                        lineText = lineText.Substring(0, Math.Min(relativeCaret, lineText.Length));
                     }
 
-                    // Caret must be within the class attribute's quotes
-                    if (triggerLocation.Position <= line.Start.Position + closingQuoteIndex)
+                    int classIndex = lineText.LastIndexOf("class=\"", StringComparison.OrdinalIgnoreCase);
+                    if (classIndex >= 0)
                     {
                         return true;
                     }
+
+                    // Early out if we hit a closing or opening tag boundary — we’re outside the element
+                    if (lineText.Contains('>') || lineText.Contains('<'))
+                        break;
+
+                    caretLineNumber--;
+                    linesChecked++;
                 }
 
-                // Early out if we hit a closing or opening tag boundary — we’re outside the element
-                if (lineText.Contains('>') || lineText.Contains('<'))
-                    break;
-
-                caretLineNumber--;
-                linesChecked++;
+                return false;
             }
 
-            return false;
+            bool IsToLeftOffQuotation()
+            {
+                var snapshot = triggerLocation.Snapshot;
+                var caretLineNumber = triggerLocation.GetContainingLine().LineNumber;
+                
+                int linesChecked = 0;
+                int caretOffset = triggerLocation.Position;
+                    
+                // Check to right and down from trigger location
+                while(caretLineNumber < snapshot.LineCount && linesChecked < maxLinesToCheck)
+                {
+                    var line = snapshot.GetLineFromLineNumber(caretLineNumber);
+                    string lineText = line.GetText();
+
+                    // Only look at the part of the text before the caret on the caret line
+                    if (caretLineNumber == triggerLocation.GetContainingLine().LineNumber)
+                    {
+                        int relativeCaret = triggerLocation.Position - line.Start.Position;
+                        lineText = lineText.Substring(relativeCaret);
+                    }
+
+                    int quoteIndex = lineText.IndexOf('"');
+                    if (quoteIndex >= 0)
+                    {
+                        return true;
+                    }
+                    // Early out if we hit a closing or opening tag boundary — we’re outside the element
+                    if (lineText.Contains('>') || lineText.Contains('<'))
+                        break;
+                    caretLineNumber++;
+                    linesChecked++;
+                }
+
+                return false;
+            }
         }
         
         private static SnapshotSpan FindClassSelectorSpan(SnapshotPoint triggerLocation)
@@ -175,6 +204,5 @@ namespace Hobby_BlazorIntellisense.Domain
 
             return new SnapshotSpan(snapshot, start, end - start);
         }
-
     }
 }

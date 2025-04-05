@@ -65,7 +65,8 @@ namespace Hobby_BlazorIntellisense.Domain
 
             foreach (var styleRule in styleRulesArr)
             {
-                var classSelectors = styleRule.Children.OfType<ClassSelector>();
+                var classSelectors = AllSelectorsFrom<ClassSelector>(styleRule).ToArray();
+
                 var classCompletions = classSelectors.Select(s => new CssClassCompletion()
                 {
                     ClassName = s.Class,
@@ -79,6 +80,61 @@ namespace Hobby_BlazorIntellisense.Domain
             }
 
             return (totalClassCompletions, false);
+        }
+
+        /// <summary>
+        /// Manages to get all selectors (like <see cref="ClassSelector"/>)
+        /// from a style rule. The method handles scenarios where selectors are deeply nested,
+        /// such as StyleRule -> k * ListSelector -> n * CompoundSelector ->  m * ClassSelector.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="styleRule"></param>
+        /// <returns></returns>
+        private IEnumerable<T> AllSelectorsFrom<T>(IStyleRule styleRule)
+            where T : ISelector
+        {
+            // Direct class selectors (".a")
+            var directSelectors = styleRule.Children.OfType<T>();
+
+            // Compound selectors (".a:active")
+            var compoundSelectors = styleRule.Children.OfType<CompoundSelector>();
+            var fromCompoundSelectors = AllSelectorsFromListSelector<T>(compoundSelectors);
+
+            // List selectors (".a, .b, .c")
+            var listSelectors = styleRule.Children.OfType<ListSelector>();
+            var fromListSelectors = AllSelectorsFromListSelector<T>(listSelectors);
+
+            //-> No list selectors, so we can ignore them
+
+            var allSelectors = directSelectors
+                .Concat(fromCompoundSelectors)
+                .Concat(fromListSelectors);
+
+            return allSelectors;
+        }
+
+        private IEnumerable<T> AllSelectorsFromListSelector<T>(IEnumerable<Selectors> selector)
+            where T : ISelector
+        {
+            // List selectors (".a, .b, .c")
+            var listSelectors = selector
+                .SelectMany(s => s)
+                .OfType<T>();
+
+            // Compound selectors (".a:active")
+            var compoundSelectors = selector
+                .SelectMany(s => s)
+                .OfType<CompoundSelector>();
+
+            if(!compoundSelectors.Any())
+            {
+                // No compound selectors, so we can ignore them
+                return listSelectors;
+            }
+
+            var fromCompoundSelectors = AllSelectorsFromListSelector<T>(compoundSelectors);
+            return listSelectors
+                .Concat(fromCompoundSelectors);
         }
     }
 }
