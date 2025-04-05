@@ -6,7 +6,11 @@ using Hobby_BlazorIntellisense.Domain;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-
+using EnvDTE;
+using Microsoft.VisualStudio.Threading;
+using System.Linq;
+using EnvDTE80;
+using Hobby_BlazorIntellisense.Domain.Settings;
 namespace BlazorIntellisense
 {
     /// <summary>
@@ -54,13 +58,54 @@ namespace BlazorIntellisense
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await ManageCssCatalogToolWindowCommand.InitializeAsync(this);
+            
+            // Subscribe to solution load event
+            var dte = (DTE2)await GetServiceAsync(typeof(DTE));
+            dte.Events.SolutionEvents.Opened += HandleSolutionOpened;
+            dte.Events.SolutionEvents.AfterClosing += HandleSolutionClosed;
+        }
 
-             SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
-                new []
+        private void HandleSolutionClosed()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Invokes loading of solution css settings
+        /// - global solution files - <see cref="SolutionCompletionSettings"/>
+        /// </summary>
+        private void HandleSolutionOpened()
+        {
+            _ = Task.Run(async () =>
+            {
+                // Get solution file path
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                
+                var dte = (DTE2)await GetServiceAsync(typeof(DTE));
+                
+                var solution = dte.Solution;
+                var slnFilePath = solution.FullName;
+
+                // Switch to any thread
+                await Task.CompletedTask.ConfigureAwait(false);
+                
+                // Load settings
+                var settingsService = SolutionCompletionSettingsService.Instance;
+                var settings = settingsService.TryLoadSettingsForSolution(slnFilePath);
+
+                if(settings == null)
                 {
-                    "C:\\Users\\xopab\\Desktop\\global-styles.css"
+                    return;
                 }
-            );
+
+                // -> Settings loaded
+                // Load global completions
+                SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
+                    settingsService
+                        .AbsolutePathsFromSolution(settings.WhitelistGlobalStylesheetRelativePaths)
+                        .ToArray()
+                );
+            });
         }
 
         #endregion

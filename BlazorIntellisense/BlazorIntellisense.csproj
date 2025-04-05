@@ -48,10 +48,13 @@
     <Compile Include="Domain\CompletionSources\ClassName\GlobalClassNameCompletionSource.cs" />
     <Compile Include="Domain\CompletionSources\ClassName\GlobalClassNameCompletionSourceProvider.cs" />
     <Compile Include="Domain\CssClassCompletion.cs" />
-    <Compile Include="Domain\SolutionCompletionSettings.cs" />
+    <Compile Include="Domain\Settings\SolutionCompletionSettings.cs" />
+    <Compile Include="Domain\Settings\SolutionCompletionSettingsService.cs" />
     <Compile Include="Domain\StylesheetCompletions.cs" />
     <Compile Include="Domain\SolutionCssCatalogService.cs" />
     <Compile Include="Domain\StylesheetType.cs" />
+    <Compile Include="Infrastructure\OmmitiveFileSearch.cs" />
+    <Compile Include="Infrastructure\PathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlazorIntellisensePackage.cs" />
     <Compile Include="ToolWindows\Controls\StylesheetDefinition.xaml.cs">

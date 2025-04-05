@@ -20,10 +20,10 @@ namespace Hobby_BlazorIntellisense.Domain
         public StylesheetCompletions SolutionGlobalCompletions { get; private set; }
         public event Action OnSolutionGlobalCompletionsChangedEvent;
 
-        /// <summary>
-        /// Key: file path of the stylesheet, Value: CssClassCompletion
-        /// </summary>
-        public Dictionary<string, StylesheetCompletions> RazorIsolationCompletions { get; private set; } = new Dictionary<string, StylesheetCompletions>(StringComparer.OrdinalIgnoreCase);
+        ///// <summary>
+        ///// Key: file path of the stylesheet, Value: CssClassCompletion
+        ///// </summary>
+        //public Dictionary<string, StylesheetCompletions> RazorIsolationCompletions { get; private set; } = new Dictionary<string, StylesheetCompletions>(StringComparer.OrdinalIgnoreCase);
         
         private static readonly StylesheetParser s_parser = new StylesheetParser(
             tolerateInvalidSelectors: true,
