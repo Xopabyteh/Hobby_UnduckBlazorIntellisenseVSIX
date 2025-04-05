@@ -35,10 +35,17 @@ The structure of the file is as follows:
 ```json
 {
   "WhitelistGlobalStylesheetRelativePaths": [
+    // Individual stylesheet files
     // These paths are relative to the solution directory
 
-    "Some/Relative/Path/ToMy/Stylesheet.css",
-    "Some/Relative/Path/ToMy/Stylesheet2.css",
+    "Some\\Relative\\Path\\ToMy\\Stylesheet.css",
+    "Some\\Relative\\Path\\ToMy\\Stylesheet2.css",
+  ],
+  "WhitelistGlobalStylesheetDirectoryRelativePaths": [
+    // Directories containing stylesheets
+    // Also relative to the solution directory
+
+	"src\\ExampleProject.Client\\wwwroot"
   ]
 }
 ```

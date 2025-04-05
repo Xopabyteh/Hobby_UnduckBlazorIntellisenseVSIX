@@ -8,6 +8,7 @@ using EnvDTE;
 using EnvDTE80;
 using Hobby_BlazorIntellisense.Domain;
 using Hobby_BlazorIntellisense.Domain.Settings;
+using Hobby_BlazorIntellisense.Infrastructure;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -105,7 +106,7 @@ namespace Hobby_BlazorIntellisense
 
                 // Load settings
                 var settingsService = SolutionCompletionSettingsService.Instance;
-                var settings = settingsService.TryLoadSettingsForSolution(slnFilePath);
+                var settings = settingsService.EnsureLoadSettingsForSolution(slnFilePath);
 
                 if(settings == null)
                 {
@@ -113,13 +114,28 @@ namespace Hobby_BlazorIntellisense
                 }
 
                 // -> Settings loaded
-                // Load global completions
+                // Load global completions from:
+                //  1. Whitelisted global stylesheets
+                var stronglyDefinedGlobalStylesheets = settingsService.WhitelistGlobalStylesheetPaths;
+
+                //  2. Whitelisted global stylesheets directories (recursively)
+                var excludedDirs = new string[] { "bin", "obj" };
+                var foundStylesheets = settingsService.WhitelistGlobalStylesheetDirectoryPaths
+                    .SelectMany(dir => OmmitiveFileSearch.GetFilesExcludingDirs(
+                        dir,
+                        "*.css",
+                        excludedExtension: ".razor.css",
+                        excludedDirs: excludedDirs
+                    ));
+
+
                 vsStatusBar.SetText("Rebuilding global completions cache...");
+
                 SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
-                    settingsService
-                        .AbsolutePathsFromSolution(settings.WhitelistGlobalStylesheetRelativePaths)
-                        .ToArray()
+                    stronglyDefinedGlobalStylesheets
+                        .Concat(foundStylesheets)
                 );
+
                 vsStatusBar.SetText("Global completions cache rebuilt.");
             });
         }

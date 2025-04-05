@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Hobby_BlazorIntellisense.Infrastructure
 {
@@ -25,8 +26,10 @@ namespace Hobby_BlazorIntellisense.Infrastructure
             }
             
             Uri relativeUri = basePathUri.MakeRelativeUri(fullPathUri);
-
-            return Uri.UnescapeDataString(relativeUri.ToString());
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            relativePath = relativePath.Replace('/', Path.DirectorySeparatorChar); // Convert URI slashes '/' to for path symbols
+            
+            return relativePath;
         }
     }
 }

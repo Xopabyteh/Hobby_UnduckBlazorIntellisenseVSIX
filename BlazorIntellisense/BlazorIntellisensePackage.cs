@@ -90,7 +90,7 @@ namespace BlazorIntellisense
                 
                 // Load settings
                 var settingsService = SolutionCompletionSettingsService.Instance;
-                var settings = settingsService.TryLoadSettingsForSolution(slnFilePath);
+                var settings = settingsService.EnsureLoadSettingsForSolution(slnFilePath);
 
                 if(settings == null)
                 {

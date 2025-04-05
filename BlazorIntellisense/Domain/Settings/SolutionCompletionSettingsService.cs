@@ -22,7 +22,7 @@ namespace Hobby_BlazorIntellisense.Domain.Settings
         /// <br/>
         /// </summary>
         /// <returns></returns>
-        public SolutionCompletionSettings TryLoadSettingsForSolution(string slnFilePath)
+        public SolutionCompletionSettings EnsureLoadSettingsForSolution(string slnFilePath)
         {
             // Reset settings
             Settings = null;
@@ -67,7 +67,11 @@ namespace Hobby_BlazorIntellisense.Domain.Settings
                 WhitelistGlobalStylesheetRelativePaths = new string[] 
                 {
                     relativePath
-                }
+                },
+                WhitelistGlobalStylesheetDirectoryRelativePaths = new string[]
+                { 
+                
+                },
             };
 
             // Save the settings to the solution file
@@ -85,11 +89,14 @@ namespace Hobby_BlazorIntellisense.Domain.Settings
             File.WriteAllText(settingsFilePath, json);
         }
 
-        /// <summary>
-        /// Combines path -> SolutionDirectory + path.
-        /// </summary>
-        public IEnumerable<string> AbsolutePathsFromSolution(IEnumerable<string> paths)
-            => paths
-                .Select(path => Path.Combine(SolutionDirectory, path));
+        public IEnumerable<string> WhitelistGlobalStylesheetPaths =>
+            Settings.WhitelistGlobalStylesheetRelativePaths
+                .Select(relativePath => Path.Combine(SolutionDirectory, relativePath))
+                .ToArray();
+
+        public IEnumerable<string> WhitelistGlobalStylesheetDirectoryPaths =>
+            Settings.WhitelistGlobalStylesheetDirectoryRelativePaths
+                .Select(relativePath => Path.Combine(SolutionDirectory, relativePath))
+                .ToArray();
     }
 }

@@ -35,7 +35,7 @@ namespace Hobby_BlazorIntellisense.Domain
         {
         }
 
-        public void BuildSolutionGlobalCache(string[] stylesheetPaths)
+        public void BuildSolutionGlobalCache(IEnumerable<string> stylesheetPaths)
         {
             // This will happen very seldom and doesn't necessarily need to be that fast.
 
