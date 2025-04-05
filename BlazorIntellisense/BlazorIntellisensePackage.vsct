@@ -1,57 +1,67 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <Extern href="stdidcmd.h"/>
-  <Extern href="vsshlids.h"/>
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
 
   <Commands package="guidBlazorIntellisensePackage">
 
     <Groups>
         <!--Group inside the Extensions menu-->
         <Group guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup" priority="0x0100">
-          <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+          <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS" />
         </Group>    
     </Groups>
       
     <Buttons>
         <Button guid="guidBlazorIntellisensePackageCmdSet" id="ManageCssCatalogToolWindowCommandId" priority="0x0100" type="Button">
-            <Parent guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup"/>
+            <Parent guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup" />
             <Icon guid="guidImages" id="bmpPic1" />
             <Strings>
                 <ButtonText>Manage CSS Catalog</ButtonText>
             </Strings>
         </Button>
+        <Button guid="guidBlazorIntellisensePackageCmdSet" id="cmdidRebuildGlobalCompletionsCacheCommand" priority="0x0100" type="Button">
+            <Parent guid="guidBlazorIntellisensePackageCmdSet" id="MyMenuGroup" />
+            <Icon guid="guidImagesExportedMonikers" id="globalVariable" />
+            <Strings>
+                <ButtonText>Rebuild global CSS completions cache</ButtonText>
+            </Strings>
+        </Button>
     </Buttons>
     
-      <Bitmaps>
-      <Bitmap guid="guidImages" href="Resources\ManageCssCatalogToolWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\ManageCssCatalogToolWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImagesExportedMonikers" href="Resources\ExportedMonikers.png" usedList="globalVariable" />
     </Bitmaps>
   </Commands>
 
-  <Symbols>
-    <!-- This is the package guid. -->
-    <GuidSymbol name="guidBlazorIntellisensePackage" value="{1c0f6cb8-e764-4566-8a43-128da27e08b0}" />
-    
-    <!--Workaround to add to be able to add buttons to extensions menu-->
-    <GuidSymbol name="guidSHLMainMenu" value="{9a443e1a-ba81-45fd-8491-394c70a184a5}">
-        <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
-    </GuidSymbol>
+    <Symbols>
+        <!-- This is the package guid. -->
+        <GuidSymbol name="guidBlazorIntellisensePackage" value="{1c0f6cb8-e764-4566-8a43-128da27e08b0}" />
 
-      <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidBlazorIntellisensePackageCmdSet" value="{9a443e1a-ba81-45fd-8491-394c70a184a5}">
-      <IDSymbol name="MyMenuGroup" value="0x0100" />
-      <IDSymbol name="ManageCssCatalogToolWindowCommandId" value="0x0101" />
-    </GuidSymbol>
+        <!--Workaround to add to be able to add buttons to extensions menu-->
+        <GuidSymbol name="guidSHLMainMenu" value="{9a443e1a-ba81-45fd-8491-394c70a184a5}">
+            <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
+        </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{e9c9948d-7b98-427e-bbe3-25c21d3512e9}" >
-      <IDSymbol name="bmpPic1" value="1" />
-      <IDSymbol name="bmpPic2" value="2" />
-      <IDSymbol name="bmpPicSearch" value="3" />
-      <IDSymbol name="bmpPicX" value="4" />
-      <IDSymbol name="bmpPicArrows" value="5" />
-      <IDSymbol name="bmpPicStrikethrough" value="6" />
-    </GuidSymbol>
+        <!-- This is the guid used to group the menu commands together -->
+        <GuidSymbol name="guidBlazorIntellisensePackageCmdSet" value="{9a443e1a-ba81-45fd-8491-394c70a184a5}">
+            <IDSymbol name="MyMenuGroup" value="0x0100" />
+            <IDSymbol name="ManageCssCatalogToolWindowCommandId" value="0x0101" />
+            <IDSymbol name="cmdidRebuildGlobalCompletionsCacheCommand" value="0x0102" />
+        </GuidSymbol>
 
-      
-  </Symbols>
+        <GuidSymbol name="guidImages" value="{e9c9948d-7b98-427e-bbe3-25c21d3512e9}">
+            <IDSymbol name="bmpPic1" value="1" />
+            <IDSymbol name="bmpPic2" value="2" />
+            <IDSymbol name="bmpPicSearch" value="3" />
+            <IDSymbol name="bmpPicX" value="4" />
+            <IDSymbol name="bmpPicArrows" value="5" />
+            <IDSymbol name="bmpPicStrikethrough" value="6" />
+        </GuidSymbol>
 
+        <GuidSymbol name="guidImagesExportedMonikers" value="{e9c9948d-7b98-427e-bbe3-25c21d3512f0}">
+            <IDSymbol name="globalVariable" value="1" />
+        </GuidSymbol>
+    </Symbols>
 </CommandTable>

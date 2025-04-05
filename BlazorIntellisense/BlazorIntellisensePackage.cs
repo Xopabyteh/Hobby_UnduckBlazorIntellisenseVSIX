@@ -43,8 +43,6 @@ namespace BlazorIntellisense
         /// </summary>
         public const string PackageGuidString = "1c0f6cb8-e764-4566-8a43-128da27e08b0";
 
-        #region Package Members
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -63,6 +61,7 @@ namespace BlazorIntellisense
             var dte = (DTE2)await GetServiceAsync(typeof(DTE));
             dte.Events.SolutionEvents.Opened += HandleSolutionOpened;
             dte.Events.SolutionEvents.AfterClosing += HandleSolutionClosed;
+            await Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
         }
 
         private void HandleSolutionClosed()
@@ -99,15 +98,9 @@ namespace BlazorIntellisense
                 }
 
                 // -> Settings loaded
-                // Load global completions
-                SolutionCssCatalogService.Instance.BuildSolutionGlobalCache(
-                    settingsService
-                        .AbsolutePathsFromSolution(settings.WhitelistGlobalStylesheetRelativePaths)
-                        .ToArray()
-                );
+                // Run build command
+                Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.Instance.Execute(this, e: null);
             });
         }
-
-        #endregion
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="Infrastructure\PathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlazorIntellisensePackage.cs" />
+    <Compile Include="Commands\RebuildGlobalCompletionsCacheCommand.cs" />
     <Compile Include="ToolWindows\Controls\StylesheetDefinition.xaml.cs">
       <DependentUpon>StylesheetDefinition.xaml</DependentUpon>
     </Compile>

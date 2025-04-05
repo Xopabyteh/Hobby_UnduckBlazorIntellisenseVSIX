@@ -10,6 +10,7 @@ namespace Hobby_BlazorIntellisense.Domain
 {
     [Export(typeof(IAsyncCompletionSourceProvider))]
     [ContentType("razor")]
+    [ContentType("html")]
     [ContentType("RazorCSharp")]
     [ContentType("LegacyRazorCSharp")]
     [Order(Before = "default")]
