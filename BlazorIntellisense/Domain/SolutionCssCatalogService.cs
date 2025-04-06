@@ -116,7 +116,7 @@ namespace BlazorIntellisense.Domain
         }
 
         # region Stylesheet parsing
-        private (List<CssClassCompletion> classes, bool _) ParseStylesheetToCompletions(string filePath)
+        public (List<CssClassCompletion> classes, bool _) ParseStylesheetToCompletions(string filePath)
         {
             var stylesheet = s_parser.Parse(File.ReadAllText(filePath));
             var styleRulesArr = stylesheet.StyleRules.ToArray();
@@ -124,7 +124,7 @@ namespace BlazorIntellisense.Domain
 
             foreach (var styleRule in styleRulesArr)
             {
-                var classSelectors = AllSelectorsFrom<ClassSelector>(styleRule).ToArray();
+                var classSelectors = AllClassesFromStyle(styleRule).ToArray();
 
                 var classCompletions = classSelectors.Select(s => new CssClassCompletion()
                 {
@@ -142,61 +142,78 @@ namespace BlazorIntellisense.Domain
             return (totalClassCompletions, false);
         }
 
-        // Todo: doesn't extract btn-link from ".top-row ::deep a:hover, .top-row ::deep .btn-link:hover" 👀
-        /// <summary>
-        /// Manages to get all selectors (like <see cref="ClassSelector"/>)
-        /// from a style rule. The method handles scenarios where selectors are deeply nested,
-        /// such as StyleRule -> k * ListSelector -> n * CompoundSelector ->  m * ClassSelector.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="styleRule"></param>
-        /// <returns></returns>
-        private IEnumerable<T> AllSelectorsFrom<T>(IStyleRule styleRule)
-            where T : ISelector
+        private IEnumerable<ClassSelector> AllClassesFromStyle(IStyleRule styleRule)
         {
-            // Direct class selectors (".a")
-            var directSelectors = styleRule.Children.OfType<T>();
-
-            // Compound selectors (".a:active")
-            var compoundSelectors = styleRule.Children.OfType<CompoundSelector>();
-            var fromCompoundSelectors = AllSelectorsFromListSelector<T>(compoundSelectors);
-
-            // List selectors (".a, .b, .c")
-            var listSelectors = styleRule.Children.OfType<ListSelector>();
-            var fromListSelectors = AllSelectorsFromListSelector<T>(listSelectors);
-
-            //-> No list selectors, so we can ignore them
-
-            var allSelectors = directSelectors
-                .Concat(fromCompoundSelectors)
-                .Concat(fromListSelectors);
-
-            return allSelectors;
+            return styleRule.Children.SelectMany(AllClassesFrom);
         }
 
-        private IEnumerable<T> AllSelectorsFromListSelector<T>(IEnumerable<Selectors> selector)
-            where T : ISelector
+
+        private IEnumerable<ClassSelector> AllClassesFrom(IStylesheetNode from)
         {
-            // List selectors (".a, .b, .c")
-            var listSelectors = selector
-                .SelectMany(s => s)
-                .OfType<T>();
-
-            // Compound selectors (".a:active")
-            var compoundSelectors = selector
-                .SelectMany(s => s)
-                .OfType<CompoundSelector>();
-
-            if(!compoundSelectors.Any())
+            if (from is ClassSelector t)
             {
-                // No compound selectors, so we can ignore them
-                return listSelectors;
+                yield return t;
             }
-
-            var fromCompoundSelectors = AllSelectorsFromListSelector<T>(compoundSelectors);
-            return listSelectors
-                .Concat(fromCompoundSelectors);
+            else if (from is Selectors selectors)
+            {
+                foreach (var selector in selectors)
+                {
+                    foreach (var classSelector in AllClassesFrom(selector))
+                    {
+                        yield return classSelector;
+                    }
+                }
+            }
+            else if (from is ComplexSelector complexSelector)
+            {
+                foreach (var combinatorSelector in complexSelector)
+                {
+                    foreach (var classSelector in AllClassesFrom(combinatorSelector.Selector))
+                    {
+                        yield return classSelector;
+                    }
+                }
+            }
         }
+
+        //private IEnumerable<ClassSelector> AllClassesFrom(IStylesheetNode from)
+        //{
+        //    // Direct class selectors (".a")
+        //    // Compound selectors (".a:active")
+        //    // Combinator selectors (":deep .a") - a selector with a delimiter
+        //    // List selectors (".a, .b, .c")
+        //    // Complex selectors (".a > .b .c")
+        //    var result = new List<ClassSelector>();
+
+        //    // StyleRule
+        //    //  \ .Children -> StylesheetNode[]
+        //    //      \ ClassSelector -> ✅
+        //    //      \ Selectors
+        //    //          \ 1*ISelector (Selector or Selectors)
+        //    //      \ CombinatorSelector <NOT ISelector>
+        //    //          \ 1*ISelectcor (Selector or Selectors)
+        //    //      \ ComplexSelector
+        //    //          \ n*CombinatorSelector
+
+        //    if (from is ClassSelector t)
+        //    {
+        //        result.Add(t);
+        //        return result;
+        //    }
+
+        //    if(from is Selectors selectors)
+        //    {
+        //        result.AddRange(selectors.SelectMany(AllClassesFrom));
+        //    }
+
+        //    if(from is ComplexSelector complexSelector)
+        //    {
+        //        // c is CombinatorSelector here
+        //        result.AddRange(complexSelector.SelectMany(c => AllClassesFrom(c.Selector)));
+        //    }
+
+        //    return result;
+        //}
         # endregion
     }
 }
