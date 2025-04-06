@@ -1,11 +1,9 @@
-﻿using EnvDTE80;
-using Hobby_BlazorIntellisense.Infrastructure;
+﻿using BlazorIntellisense.Infrastructure;
+using EnvDTE80;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
-using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Immutable;
@@ -13,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Isolated
+namespace BlazorIntellisense.Domain.CompletionSources.Isolated
 {
     /// <summary>
     /// Completion source for it's own file (<see cref="ITextView"/>)
@@ -86,7 +84,7 @@ namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Isolated
         {
             // We don't trigger completion when user typed
             if (char.IsNumber(trigger.Character)         // a number
-                || (char.IsPunctuation(trigger.Character) && trigger.Character != '"') // punctuation (for some reason '"' counts as punctuation as well...)
+                || char.IsPunctuation(trigger.Character) && trigger.Character != '"' // punctuation (for some reason '"' counts as punctuation as well...)
                 || trigger.Character == '\n'             // new line
                 || trigger.Character == '='
                 || trigger.Reason == CompletionTriggerReason.Backspace

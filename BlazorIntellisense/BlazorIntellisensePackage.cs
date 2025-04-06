@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Hobby_BlazorIntellisense.Commands;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using EnvDTE;
 using Microsoft.VisualStudio.Threading;
 using EnvDTE80;
-using Hobby_BlazorIntellisense.Domain.Settings;
-using Hobby_BlazorIntellisense.Domain.CompletionSources.Global;
+using BlazorIntellisense.Domain.Settings;
+using BlazorIntellisense.Commands;
+using BlazorIntellisense.Domain.CompletionSources.Global;
+using BlazorIntellisense.ToolWindows;
 namespace BlazorIntellisense
 {
     /// <summary>
@@ -34,11 +35,11 @@ namespace BlazorIntellisense
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideLanguageService(typeof(GlobalClassNameCompletionSource), "C#", 106)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(Hobby_BlazorIntellisense.ToolWindows.ManageCssCatalogToolWindow))]
+    [ProvideToolWindow(typeof(ManageCssCatalogToolWindow))]
     public sealed class BlazorIntellisensePackage : AsyncPackage
     {
          /// <summary>
-        /// Hobby_BlazorIntellisensePackage GUID string.
+        /// BlazorIntellisensePackage GUID string.
         /// </summary>
         public const string PackageGuidString = "1c0f6cb8-e764-4566-8a43-128da27e08b0";
 
@@ -56,8 +57,8 @@ namespace BlazorIntellisense
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
             await ManageCssCatalogToolWindowCommand.InitializeAsync(this);
-            await Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
-            await Hobby_BlazorIntellisense.RebuildIsolatedCompletionsCacheCommand.InitializeAsync(this);
+            await RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
+            await RebuildIsolatedCompletionsCacheCommand.InitializeAsync(this);
 
             // Subscribe to solution load event
             var dte = (DTE2)await GetServiceAsync(typeof(DTE));
@@ -103,7 +104,7 @@ namespace BlazorIntellisense
 
                 // -> Settings loaded
                 // Run build command
-                Hobby_BlazorIntellisense.RebuildGlobalCompletionsCacheCommand.Instance.Execute(this, e: null);
+                RebuildGlobalCompletionsCacheCommand.Instance.Execute(this, e: null);
             });
         }
     }

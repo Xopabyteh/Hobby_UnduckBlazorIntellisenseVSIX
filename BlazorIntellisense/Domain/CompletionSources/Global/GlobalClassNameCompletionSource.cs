@@ -1,4 +1,6 @@
-﻿using Hobby_BlazorIntellisense.Infrastructure;
+﻿using BlazorIntellisense.Domain;
+using BlazorIntellisense.Domain.CompletionSources;
+using BlazorIntellisense.Infrastructure;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
 using Microsoft.VisualStudio.Language.StandardClassification;
@@ -11,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Global
+namespace BlazorIntellisense.Domain.CompletionSources.Global
 {
     /// <summary>
     /// Provides global solution scoped intellisense for class names

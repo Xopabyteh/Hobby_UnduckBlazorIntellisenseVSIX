@@ -6,14 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
-using Hobby_BlazorIntellisense.Domain;
-using Hobby_BlazorIntellisense.Domain.Settings;
-using Hobby_BlazorIntellisense.Infrastructure;
+using BlazorIntellisense.Domain;
+using BlazorIntellisense.Domain.Settings;
+using BlazorIntellisense.Infrastructure;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Hobby_BlazorIntellisense
+namespace BlazorIntellisense.Commands
 {
     /// <summary>
     /// Command handler
@@ -47,7 +47,7 @@ namespace Hobby_BlazorIntellisense
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            var menuItem = new MenuCommand(Execute, menuCommandID);
             commandService.AddCommand(menuItem);
         }
 
@@ -63,11 +63,11 @@ namespace Hobby_BlazorIntellisense
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
+        private IAsyncServiceProvider ServiceProvider
         {
             get
             {
-                return this.package;
+                return package;
             }
         }
 

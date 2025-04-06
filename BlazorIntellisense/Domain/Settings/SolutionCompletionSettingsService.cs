@@ -1,10 +1,11 @@
-﻿using Hobby_BlazorIntellisense.Infrastructure;
+﻿using BlazorIntellisense.Infrastructure;
+using BlazorIntellisense.Infrastructure;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Hobby_BlazorIntellisense.Domain.Settings
+namespace BlazorIntellisense.Domain.Settings
 {
     public class SolutionCompletionSettingsService
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System;
 
-namespace Hobby_BlazorIntellisense.Infrastructure
+namespace BlazorIntellisense.Infrastructure
 {
     public static class OmmitiveFileSearch
     {

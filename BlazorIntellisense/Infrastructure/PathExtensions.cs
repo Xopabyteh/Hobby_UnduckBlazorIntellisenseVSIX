@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Hobby_BlazorIntellisense.Infrastructure
+namespace BlazorIntellisense.Infrastructure
 {
     public class PathExtensions
     {

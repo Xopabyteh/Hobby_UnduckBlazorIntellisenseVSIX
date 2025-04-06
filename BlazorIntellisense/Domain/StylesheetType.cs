@@ -1,4 +1,4 @@
-﻿namespace Hobby_BlazorIntellisense.Domain
+﻿namespace BlazorIntellisense.Domain
 {
     public enum StylesheetType
     {

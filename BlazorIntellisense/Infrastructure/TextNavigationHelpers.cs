@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System;
 
-namespace Hobby_BlazorIntellisense.Infrastructure
+namespace BlazorIntellisense.Infrastructure
 {
     public class TextNavigationHelpers
     {

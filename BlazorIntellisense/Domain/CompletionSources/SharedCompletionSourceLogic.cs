@@ -1,4 +1,5 @@
-﻿using EnvDTE80;
+﻿using BlazorIntellisense.Domain;
+using EnvDTE80;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Adornments;
@@ -6,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain.CompletionSources
+namespace BlazorIntellisense.Domain.CompletionSources
 {
     public static class SharedCompletionSourceLogic
     {

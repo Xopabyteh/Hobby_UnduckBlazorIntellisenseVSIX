@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Hobby_BlazorIntellisense.ToolWindows.Controls.StylesheetDefinition"
+﻿<UserControl x:Class="BlazorIntellisense.ToolWindows.Controls.StylesheetDefinition"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-             xmlns:local="clr-namespace:Hobby_BlazorIntellisense.ToolWindows.Controls"
+             xmlns:local="clr-namespace:BlazorIntellisense.ToolWindows.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
     <Grid Margin="0, 0, 0, 16">
@@ -48,12 +48,12 @@
     </Grid>
     <UserControl.Resources>
         <imaging:CrispImage x:Key="UiRemove" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Remove}" />
-        <Image              x:Key="UiRemoveDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Remove.png"/>
+        <Image              x:Key="UiRemoveDT" Width="16" Height="16" Source="/BlazorIntellisense;component/Resources/DesignTimeImages/Remove.png"/>
 
         <imaging:CrispImage x:Key="UiRefresh" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Refresh}" />
-        <Image              x:Key="UiRefreshDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Refresh.png"/>
+        <Image              x:Key="UiRefreshDT" Width="16" Height="16" Source="/BlazorIntellisense;component/Resources/DesignTimeImages/Refresh.png"/>
 
         <imaging:CrispImage x:Key="UiAdd" Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Add}" />
-        <Image              x:Key="UiAddDT" Width="16" Height="16" Source="/Hobby_BlazorIntellisense;component/Resources/DesignTimeImages/Add.png"/>
+        <Image              x:Key="UiAddDT" Width="16" Height="16" Source="/BlazorIntellisense;component/Resources/DesignTimeImages/Add.png"/>
     </UserControl.Resources>
 </UserControl>

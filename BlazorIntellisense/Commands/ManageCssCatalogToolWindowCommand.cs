@@ -3,14 +3,14 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using BlazorIntellisense.ToolWindows;
 using EnvDTE;
 using EnvDTE80;
-using Hobby_BlazorIntellisense.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Hobby_BlazorIntellisense.Commands
+namespace BlazorIntellisense.Commands
 {
     /// <summary>
     /// Command handler

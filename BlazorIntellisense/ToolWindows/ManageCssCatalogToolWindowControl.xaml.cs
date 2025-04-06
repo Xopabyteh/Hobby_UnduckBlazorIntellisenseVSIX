@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
-namespace Hobby_BlazorIntellisense.ToolWindows
+namespace BlazorIntellisense.ToolWindows
 {
 
     /// <summary>

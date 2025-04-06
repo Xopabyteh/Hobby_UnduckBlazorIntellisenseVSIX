@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using BlazorIntellisense.Domain;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Hobby_BlazorIntellisense.Domain
+namespace BlazorIntellisense.Domain
 {
     public class StylesheetCompletions
     {

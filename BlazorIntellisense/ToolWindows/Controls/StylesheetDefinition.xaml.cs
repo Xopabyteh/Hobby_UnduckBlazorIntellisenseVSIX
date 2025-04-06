@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Hobby_BlazorIntellisense.ToolWindows.Controls
+namespace BlazorIntellisense.ToolWindows.Controls
 {
     /// <summary>
     /// Interaction logic for StylesheetDefinition.xaml

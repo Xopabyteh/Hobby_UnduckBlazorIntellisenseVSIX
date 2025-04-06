@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hobby_BlazorIntellisense.Domain.Settings
+namespace BlazorIntellisense.Domain.Settings
 {
     public class SolutionCompletionSettings
     {

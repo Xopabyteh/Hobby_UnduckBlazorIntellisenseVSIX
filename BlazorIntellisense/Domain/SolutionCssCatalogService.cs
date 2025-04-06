@@ -1,4 +1,5 @@
-﻿using ExCSS;
+﻿using BlazorIntellisense.Domain;
+using ExCSS;
 using MoreLinq;
 using System;
 using System.Collections.Concurrent;
@@ -8,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain
+namespace BlazorIntellisense.Domain
 {
     /// <summary>
     /// Control the catalog accoarding to the current solution.

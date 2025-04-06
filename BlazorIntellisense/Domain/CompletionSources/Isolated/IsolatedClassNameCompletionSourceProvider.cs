@@ -1,17 +1,13 @@
 ﻿using Microsoft.VisualStudio.Core.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
-using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Hobby_BlazorIntellisense.Domain.CompletionSources.Isolated
+namespace BlazorIntellisense.Domain.CompletionSources.Isolated
 {
     /// <summary>
     /// Provides intellisense for isolated stylesheet class names.
