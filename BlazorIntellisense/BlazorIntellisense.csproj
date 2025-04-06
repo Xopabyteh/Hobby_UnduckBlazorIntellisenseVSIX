@@ -127,7 +127,10 @@
     <Content Include="Resources\DesignTimeImages\Refresh.png" />
     <Content Include="Resources\DesignTimeImages\Remove.png" />
     <Content Include="Resources\ExportedMonikers.png" />
-    <Content Include="Resources\ExtensionIcon.png" />
+    <Content Include="MarketplaceResources\ExtensionIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\ManageCssCatalogToolWindowCommand.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,8 +9,8 @@ which are expected to be available in all Blazor components.
 This is useful when your stylesheets are in a different project than your components
 (which VS doesn't recognize)</Description>
         <MoreInfo>https://github.com/Xopabyteh/Hobby_UnduckBlazorIntellisenseVSIX</MoreInfo>
-        <Icon>Resources\ExtensionIcon.png</Icon>
-        <PreviewImage>Resources\ExtensionIcon.png</PreviewImage>
+        <Icon>MarketplaceResources\ExtensionIcon.png</Icon>
+        <PreviewImage>MarketplaceResources\ExtensionIcon.png</PreviewImage>
         <Tags>css, intellisense, html, blazor, global, stylesheet, unduck, bootstrap, tailwind</Tags>
         <Preview>true</Preview>
     </Metadata>
