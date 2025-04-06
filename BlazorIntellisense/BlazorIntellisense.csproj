@@ -53,6 +53,7 @@
     <Compile Include="Domain\CompletionSources\Isolated\IsolatedClassNameCompletionSourceProvider.cs" />
     <Compile Include="Domain\CompletionSources\SharedCompletionSourceLogic.cs" />
     <Compile Include="Domain\CssClassCompletion.cs" />
+    <Compile Include="Domain\UpdateCatalogOnFileRemovedService.cs" />
     <Compile Include="Domain\Settings\SolutionCompletionSettings.cs" />
     <Compile Include="Domain\Settings\SolutionCompletionSettingsService.cs" />
     <Compile Include="Domain\StylesheetCompletions.cs" />
@@ -115,17 +116,13 @@
     <VSCTCompile Include="BlazorIntellisensePackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Resources\DesignTimeImages\Add.png" />
     <Content Include="Resources\DesignTimeImages\Refresh.png" />
     <Content Include="Resources\DesignTimeImages\Remove.png" />
-    <Content Include="Resources\ExportedMonikers.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\ExtensionIcon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <Content Include="Resources\ExportedMonikers.png" />
+    <Content Include="Resources\ExtensionIcon.png" />
     <Content Include="Resources\ManageCssCatalogToolWindowCommand.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

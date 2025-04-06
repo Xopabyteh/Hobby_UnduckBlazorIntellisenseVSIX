@@ -39,8 +39,22 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
             _activeFilePath = dte.ActiveDocument.FullName;
             _isolatedRazorCssFilePath = $"{_activeFilePath}.css";
 
-            SolutionCssCatalogService.Instance.OnIsolatedCompletionUpdated += HandleCompletionUpdated;
+            SolutionCssCatalogService.Instance.OnIsolatedCompletionUpdated += HandleCompletionStylesheetUpdated;
+            SolutionCssCatalogService.Instance.OnIsolatedCompletionRemoved += HandleCompletionStylesheedRemoved;
             TryGetCompletionsFromCatalog();
+        }
+
+        private void HandleCompletionStylesheedRemoved(object sender, string e)
+        {
+            // Check if the completion is for our isolated file
+            if (!string.Equals(e, _isolatedRazorCssFilePath, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
+
+            // We don't have completions anymore
+            hasCompletions = false;
+            completionSource = null;
         }
 
         private void TryGetCompletionsFromCatalog()
@@ -60,7 +74,7 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleCompletionUpdated(object sender, string e)
+        private void HandleCompletionStylesheetUpdated(object sender, string e)
         {
             if(hasCompletions)
             {

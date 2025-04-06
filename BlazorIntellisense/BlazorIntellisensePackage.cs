@@ -45,7 +45,11 @@ namespace BlazorIntellisense
         /// </summary>
         public const string PackageGuidString = "1c0f6cb8-e764-4566-8a43-128da27e08b0";
 
+        // We need to keep a reference to these "*EventsRef", because
+        // there is some wizard shit that prevents it from working, unless we have the reference...
+        private SolutionEvents solutionEventsRef;
         private DocumentEvents documentEventsRef;
+        private ProjectItemsEvents solutionItemsEventsRef;
         
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -64,23 +68,32 @@ namespace BlazorIntellisense
             await RebuildGlobalCompletionsCacheCommand.InitializeAsync(this);
             await RebuildIsolatedCompletionsCacheCommand.InitializeAsync(this);
 
-            // Subscribe to solution load event
+            // Subscribe events
             var dte = (DTE2)await GetServiceAsync(typeof(DTE));
-            dte.Events.SolutionEvents.Opened += HandleSolutionOpened;
-            dte.Events.SolutionEvents.AfterClosing += HandleSolutionClosed;
             
+            // Sln
+            solutionEventsRef = dte.Events.SolutionEvents;
+            solutionEventsRef.Opened += HandleSolutionOpened;
+            solutionEventsRef.AfterClosing += HandleSolutionClosed;
+            
+            // Documents
             documentEventsRef = dte.Events.DocumentEvents;
             documentEventsRef.DocumentSaved += HandleDocumentSaved;
+
+            // On removed
+            var trackProjectDocuments = (IVsTrackProjectDocuments2) await GetServiceAsync(typeof(SVsTrackProjectDocuments));
+            var trackProjectDocumentsEvents = new UpdateCatalogOnFileRemovedService();
+            trackProjectDocuments.AdviseTrackProjectDocumentsEvents(trackProjectDocumentsEvents, out _);
         }
 
         /// <summary>
         /// Invokes rebuilding of isolated completions cache
         /// </summary>
-        /// <param name="Document"></param>
-        private void HandleDocumentSaved(Document Document)
+        /// <param name="document"></param>
+        private void HandleDocumentSaved(Document document)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var filePath = Document.FullName;
+            var filePath = document.FullName;
 
             _= Task.Run(() =>
             {
