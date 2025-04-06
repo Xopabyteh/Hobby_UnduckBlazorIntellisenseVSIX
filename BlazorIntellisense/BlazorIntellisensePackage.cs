@@ -110,7 +110,9 @@ namespace BlazorIntellisense
 
         private void HandleSolutionClosed()
         {
-            // Todo: clear?
+            _ = Task.Run(() => { 
+                SolutionCssCatalogService.Instance.ClearAllCaches();
+            });
         }
 
         /// <summary>

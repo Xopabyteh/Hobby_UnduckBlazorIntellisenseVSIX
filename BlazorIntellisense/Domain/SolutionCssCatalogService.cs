@@ -56,7 +56,6 @@ namespace BlazorIntellisense.Domain
         public void BuildSolutionGlobalCache(IEnumerable<string> stylesheetPaths)
         {
             // This will happen very seldom and doesn't necessarily need to be that fast.
-
             // Parse
             List<CssClassCompletion> classes = new List<CssClassCompletion>(1000);
             foreach (var filePath in stylesheetPaths)
@@ -115,6 +114,14 @@ namespace BlazorIntellisense.Domain
             OnIsolatedCompletionRemoved?.Invoke(this, filePath);
         }
 
+        public void ClearAllCaches()
+        {
+            SolutionGlobalCompletions = null;
+            OnSolutionGlobalCompletionsChanged?.Invoke();
+            
+            RazorIsolationCompletions.Clear();
+        }
+
         # region Stylesheet parsing
         public (List<CssClassCompletion> classes, bool _) ParseStylesheetToCompletions(string filePath)
         {
@@ -146,7 +153,6 @@ namespace BlazorIntellisense.Domain
         {
             return styleRule.Children.SelectMany(AllClassesFrom);
         }
-
 
         private IEnumerable<ClassSelector> AllClassesFrom(IStylesheetNode from)
         {

@@ -1,15 +1,9 @@
-﻿using BlazorIntellisense.Domain;
-using BlazorIntellisense.Domain.CompletionSources;
-using BlazorIntellisense.Infrastructure;
+﻿using BlazorIntellisense.Infrastructure;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion;
 using Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Data;
-using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Adornments;
-using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +25,13 @@ namespace BlazorIntellisense.Domain.CompletionSources.Global
         private void BuildCompletionCache()
         {
             var globalCompletions = SolutionCssCatalogService.Instance.SolutionGlobalCompletions;
+            
+            if(globalCompletions == null)
+            {
+                _cachedCompletionContext = new CompletionContext(ImmutableArray<CompletionItem>.Empty);
+                return;
+            }
+
             _cachedCompletionContext = new CompletionContext(
                 globalCompletions.Classes.Select(c => new CompletionItem(
                     c.ClassName,
