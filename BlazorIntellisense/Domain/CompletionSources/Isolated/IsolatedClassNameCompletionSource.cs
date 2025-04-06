@@ -27,8 +27,8 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
         /// </summary>
         private readonly string _isolatedRazorCssFilePath;
 
-        private readonly bool _hasCompletions;
-        private readonly WeakReference<StylesheetCompletions> _completionSource;
+        private bool hasCompletions;
+        private WeakReference<StylesheetCompletions> completionSource;
 
         public IsolatedClassNameCompletionSource(ITextView textView)
         {
@@ -39,16 +39,48 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
             _activeFilePath = dte.ActiveDocument.FullName;
             _isolatedRazorCssFilePath = $"{_activeFilePath}.css";
 
-            _hasCompletions = SolutionCssCatalogService.Instance.RazorIsolationCompletions.TryGetValue(_isolatedRazorCssFilePath, out var completions);
-            if(_hasCompletions)
+            SolutionCssCatalogService.Instance.OnIsolatedCompletionUpdated += HandleCompletionUpdated;
+            TryGetCompletionsFromCatalog();
+        }
+
+        private void TryGetCompletionsFromCatalog()
+        {
+            hasCompletions = SolutionCssCatalogService.Instance.RazorIsolationCompletions.TryGetValue(_isolatedRazorCssFilePath, out var completions);
+            if (hasCompletions)
             {
-                _completionSource = new WeakReference<StylesheetCompletions>(completions);
+                completionSource = new WeakReference<StylesheetCompletions>(completions);
             }
+        }
+
+        /// <summary>
+        /// Sets reference to proper completions when updated
+        /// if the source doesn't already have them.
+        /// This is done, because the sources are cached and when a new stylesheet is added (and saved),
+        /// the sources have to get the reference to the completions of that stylesheet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleCompletionUpdated(object sender, string e)
+        {
+            if(hasCompletions)
+            {
+                // We already have reference to our completions, don't bother
+                return;
+            }
+
+            // Check if the completion is for our isolated file
+            if (!string.Equals(e, _isolatedRazorCssFilePath, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
+
+            // Get the completions
+            TryGetCompletionsFromCatalog();
         }
 
         public Task<CompletionContext> GetCompletionContextAsync(IAsyncCompletionSession session, CompletionTrigger trigger, SnapshotPoint triggerLocation, SnapshotSpan applicableToSpan, CancellationToken token)
         {
-            if(!_hasCompletions || !_completionSource.TryGetTarget(out var completions))
+            if(!hasCompletions || !completionSource.TryGetTarget(out var completions))
             {
                 return Task.FromResult(CompletionContext.Empty);
             }
@@ -66,7 +98,7 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
 
         public Task<object> GetDescriptionAsync(IAsyncCompletionSession session, CompletionItem item, CancellationToken token)
         {
-            if(!_hasCompletions || !_completionSource.TryGetTarget(out var completions))
+            if(!hasCompletions || !completionSource.TryGetTarget(out var completions))
             {
                 return Task.FromResult<object>(null);
             }

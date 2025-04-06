@@ -41,6 +41,9 @@ namespace BlazorIntellisense.Domain.CompletionSources.Isolated
             
             // Add to cache
             _cachedCompletionSources.Add(textView, source);
+
+            // This event will keep a reference to the source, so
+            // it is questionable whether to even use a conditional weak table...
             textView.Closed += (sender, args) =>
             {
                 // Remove the source when the text view is closed

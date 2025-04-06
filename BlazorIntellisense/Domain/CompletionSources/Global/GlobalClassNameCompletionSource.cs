@@ -24,7 +24,7 @@ namespace BlazorIntellisense.Domain.CompletionSources.Global
 
         public GlobalClassNameCompletionSource()
         {
-            SolutionCssCatalogService.Instance.OnSolutionGlobalCompletionsChangedEvent += BuildCompletionCache;
+            SolutionCssCatalogService.Instance.OnSolutionGlobalCompletionsChanged += BuildCompletionCache;
             BuildCompletionCache();
         }
 

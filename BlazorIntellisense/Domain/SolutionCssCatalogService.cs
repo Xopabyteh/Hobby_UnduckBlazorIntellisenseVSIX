@@ -1,5 +1,4 @@
-﻿using BlazorIntellisense.Domain;
-using ExCSS;
+﻿using ExCSS;
 using MoreLinq;
 using System;
 using System.Collections.Concurrent;
@@ -20,15 +19,29 @@ namespace BlazorIntellisense.Domain
 
         /// <summary>
         /// Completions that are to be used in the entire solution.
+        /// When changed, the references to the completions are not replaced, but updated.
         /// </summary>
         public StylesheetCompletions SolutionGlobalCompletions { get; private set; }
-        public event Action OnSolutionGlobalCompletionsChangedEvent;
+        public event Action OnSolutionGlobalCompletionsChanged;
 
         /// <summary>
-        /// Key: file path of the stylesheet, Value: CssClassCompletion
+        /// Key: file path of the stylesheet, Value: CssClassCompletion.
+        /// When the completions are rebuilt, the stylesheet value is not replaced, but updated.
+        /// (or removed when the file is deleted)
         /// </summary>
         public ConcurrentDictionary<string, StylesheetCompletions> RazorIsolationCompletions { get; private set; } 
             = new ConcurrentDictionary<string, StylesheetCompletions>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Value: file path of the stylesheet.
+        /// Called when a completion is added or updated.
+        /// </summary>
+        public event EventHandler<string> OnIsolatedCompletionUpdated;
+
+        /// <summary>
+        /// Value: file path of the stylesheet.
+        /// </summary>
+        public event EventHandler<string> OnIsolatedCompletionRemoved;
 
         private static readonly StylesheetParser s_parser = new StylesheetParser(
             tolerateInvalidSelectors: true,
@@ -53,13 +66,16 @@ namespace BlazorIntellisense.Domain
             }
 
             // Set
-            SolutionGlobalCompletions = new StylesheetCompletions(
-                classes: classes
-                    .DistinctBy(c => c.ClassName, StringComparer.OrdinalIgnoreCase)
-                    .ToImmutableArray()
-            );
+            if(SolutionGlobalCompletions != null)
+            {
+                SolutionGlobalCompletions.Update(classes);
+            }
+            else
+            {
+                SolutionGlobalCompletions = new StylesheetCompletions(classes);
+            }
 
-            OnSolutionGlobalCompletionsChangedEvent?.Invoke();
+            OnSolutionGlobalCompletionsChanged?.Invoke();
         }
 
         public void BuildIsolatedStylesheetsCaches(IEnumerable<string> isolatedStylesheetPaths)
@@ -76,11 +92,27 @@ namespace BlazorIntellisense.Domain
             var completions = ParseStylesheetToCompletions(filePath);
          
             // Set
-            RazorIsolationCompletions[filePath] = new StylesheetCompletions(
-                classes: completions.classes
-                    .DistinctBy(c => c.ClassName, StringComparer.OrdinalIgnoreCase)
-                    .ToImmutableArray()
-            );
+            var completionsCached = RazorIsolationCompletions.TryGetValue(filePath, out var existingCompletions);
+            if (completionsCached)
+            {
+                existingCompletions.Update(completions.classes);
+            }
+            else
+            {
+                RazorIsolationCompletions.TryAdd(filePath, new StylesheetCompletions(completions.classes));
+            }
+
+            OnIsolatedCompletionUpdated?.Invoke(this, filePath);
+        }
+
+        public void RemoveIsolatedStylesheet(string filePath)
+        {
+            if (!RazorIsolationCompletions.TryRemove(filePath, out _))
+            {
+                return;
+            }
+
+            OnIsolatedCompletionRemoved?.Invoke(this, filePath);
         }
 
         # region Stylesheet parsing

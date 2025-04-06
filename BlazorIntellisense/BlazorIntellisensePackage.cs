@@ -11,6 +11,8 @@ using BlazorIntellisense.Domain.Settings;
 using BlazorIntellisense.Commands;
 using BlazorIntellisense.Domain.CompletionSources.Global;
 using BlazorIntellisense.ToolWindows;
+using BlazorIntellisense.Domain;
+using Microsoft.VisualStudio.Shell.Interop;
 namespace BlazorIntellisense
 {
     /// <summary>
@@ -43,6 +45,8 @@ namespace BlazorIntellisense
         /// </summary>
         public const string PackageGuidString = "1c0f6cb8-e764-4566-8a43-128da27e08b0";
 
+        private DocumentEvents documentEventsRef;
+        
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -64,6 +68,31 @@ namespace BlazorIntellisense
             var dte = (DTE2)await GetServiceAsync(typeof(DTE));
             dte.Events.SolutionEvents.Opened += HandleSolutionOpened;
             dte.Events.SolutionEvents.AfterClosing += HandleSolutionClosed;
+            
+            documentEventsRef = dte.Events.DocumentEvents;
+            documentEventsRef.DocumentSaved += HandleDocumentSaved;
+        }
+
+        /// <summary>
+        /// Invokes rebuilding of isolated completions cache
+        /// </summary>
+        /// <param name="Document"></param>
+        private void HandleDocumentSaved(Document Document)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var filePath = Document.FullName;
+
+            _= Task.Run(() =>
+            {
+                // If it was a .razor.css file, rebuild it's isolated completions cache
+                if (!filePath.EndsWith(".razor.css", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                // Rebuild isolated completions cache
+                SolutionCssCatalogService.Instance.BuildIsolatedStylesheetCache(filePath);
+            });
         }
 
         private void HandleSolutionClosed()
@@ -90,8 +119,8 @@ namespace BlazorIntellisense
                 // Switch to any thread
                 await Task.CompletedTask.ConfigureAwait(false);
 
-                // Todo: load isolated completions
-                // Todo: rebuild isolated completions on file save
+                // Rebuild isolated completions cache
+                RebuildIsolatedCompletionsCacheCommand.Instance.Execute(this, e: null);
 
                 // Load settings
                 var settingsService = SolutionCompletionSettingsService.Instance;
