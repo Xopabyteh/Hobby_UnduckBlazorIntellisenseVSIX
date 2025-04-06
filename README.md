@@ -1,4 +1,7 @@
 ﻿# Un🦆 Blazor intellisense
+Heavily by [this css extension](https://github.com/kevin-mueller/HtmlCssClassCompletion),
+from which much of the code is copied.
+This extension solves a different problem though.
 
 ## Purpose & Features
 This extension allows you to define certain global stylesheets (like Bootstrap),
@@ -10,7 +13,7 @@ This is useful when your stylesheets are in a different project than your compon
 ### Features:
 <b>Scopes</b>
 - [x] Global stylesheets
-- [ ] Scoped stylesheets
+- [x] Scoped stylesheets
 
 <b>HTML</b>
 - [x] .razor, .html support
