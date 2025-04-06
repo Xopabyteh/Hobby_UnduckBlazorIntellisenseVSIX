@@ -13,7 +13,8 @@ This is useful when your stylesheets are in a different project than your compon
 ### Features:
 <b>Scopes</b>
 - [x] Global stylesheets
-- [x] Scoped stylesheets
+- [x] Isolated stylesheets
+- [ ] Deterministic ([use the other extension...](https://github.com/kevin-mueller/HtmlCssClassCompletion))
 
 <b>HTML</b>
 - [x] .razor, .html support
