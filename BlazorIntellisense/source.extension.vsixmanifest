@@ -11,7 +11,7 @@ This is useful when your stylesheets are in a different project than your compon
         <MoreInfo>https://github.com/Xopabyteh/Hobby_UnduckBlazorIntellisenseVSIX</MoreInfo>
         <Icon>Resources\ExtensionIcon.png</Icon>
         <PreviewImage>Resources\ExtensionIcon.png</PreviewImage>
-        <Tags>css, intellisense, html, blazor, global, stylesheet, unduck</Tags>
+        <Tags>css, intellisense, html, blazor, global, stylesheet, unduck, bootstrap, tailwind</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>

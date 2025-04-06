@@ -47,6 +47,7 @@ The structure of the file is as follows:
   "WhitelistGlobalStylesheetDirectoryRelativePaths": [
     // Directories containing stylesheets
     // Also relative to the solution directory
+    // Do not include the trailing backslash...
 
 	"src\\ExampleProject.Client\\wwwroot"
   ]
